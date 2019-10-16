@@ -60,8 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\Scripts\Alphabet.cs" />
-    <Compile Include="Assets\Scripts\AnimatedChar.cs" />
+    <Compile Include="Assets\Scripts\AnimatedSprite.cs" />
     <Compile Include="Assets\Scripts\AnimatedText.cs" />
+    <Compile Include="Assets\Scripts\Entity.cs" />
+    <Compile Include="Assets\Scripts\Map.cs" />
+    <Compile Include="Assets\Scripts\You.cs" />
+    <None Include="Assets\Resources\Levels\0.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/home/przemek/DEV/player-is-you/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

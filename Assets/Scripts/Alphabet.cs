@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Alphabet
 {
-    private static readonly Texture2D Texture = Resources.Load<Texture2D>("Textures/alphabet");
+    private static Texture2D Texture;
     
     // array mapping ascii codes to character positions and widths
     // first 32 characters are skipped (control codes should not be shown anyways)
@@ -11,7 +11,7 @@ public class Alphabet
     // first 11 bits store x offset (0 - 2047)
     // remaining 5 bits store character width - 1 (1-32)
 
-    private static readonly ushort[] Positions =
+    private static readonly ushort[] PositionsAndWidths =
     {
         0, // SPACE
         852 << 5 | 12, // !
@@ -113,10 +113,9 @@ public class Alphabet
     
     public static Texture2D GetTexture()
     {
-        if (Texture.filterMode != FilterMode.Point)
-        {
-            Texture.filterMode = FilterMode.Point;
-        }
+        if (Texture != null) return Texture;
+        Texture = Resources.Load<Texture2D>("Textures/alphabet");
+        Texture.filterMode = FilterMode.Point;
 
         return Texture;
     }
@@ -124,7 +123,7 @@ public class Alphabet
     public static Tuple<int, int> PositionAndWidthOf(char c)
     {
         if (c < 32 || c > 127) return null;
-        ushort data = Positions[c - 32];
+        ushort data = PositionsAndWidths[c - 32];
         return new Tuple<int, int>(data >> 5, data & 31);
     }
 }
