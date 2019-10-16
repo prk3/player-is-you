@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
+/**
+ * Loads map from level_.txt file, renders tiles, parses and applies rules.
+ * IMPORTANT: tiles exist in a plane where Y axis grows downwards (like in images)
+ */
 public class Map : MonoBehaviour
 {
     public int levelId;
@@ -12,13 +15,14 @@ public class Map : MonoBehaviour
     public List<Entity>[][] spots;
     private List<(EntityType, EntityType)> _prevRules;
 
+    private ObjectFitContain _contain; 
+    
     void Start()
     {
         string levelFile = $"Levels/{levelId}";
         TextAsset text = Resources.Load<TextAsset>(levelFile);
         string[] lines = text.text.Split('\n');
-        
-        
+
         width = int.Parse(lines[0]);
         height = int.Parse(lines[1]);
 
@@ -59,12 +63,19 @@ public class Map : MonoBehaviour
         
         _prevRules = new List<(EntityType, EntityType)>();
         UpdateRules();
+
+        _contain = gameObject.AddComponent<ObjectFitContain>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+        if (_contain.Contain(width, height))
+        {
+            // invert Y transform
+            var localPos = gameObject.transform.localPosition;
+            gameObject.transform.localPosition = new Vector3(localPos.x, -localPos.y, localPos.z);
+        }
     }
 
     List<(EntityType, EntityType)> ExtractRules()

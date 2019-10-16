@@ -64,6 +64,7 @@
     <Compile Include="Assets\Scripts\AnimatedText.cs" />
     <Compile Include="Assets\Scripts\Entity.cs" />
     <Compile Include="Assets\Scripts\Map.cs" />
+    <Compile Include="Assets\Scripts\ObjectFitContain.cs" />
     <Compile Include="Assets\Scripts\You.cs" />
     <None Include="Assets\Resources\Levels\0.txt" />
     <Reference Include="Unity.Timeline.Editor">

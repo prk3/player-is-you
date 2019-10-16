@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
 
 public enum EntityType
@@ -84,7 +83,7 @@ public class Entity : MonoBehaviour
         set
         {
             _x = value;
-            gameObject.transform.localPosition = new Vector3(value, -_y, 0);
+            gameObject.transform.localPosition = new Vector3(value, -_y - 1, 0);
         }
     }
     
@@ -94,7 +93,7 @@ public class Entity : MonoBehaviour
         set
         {
             _y = value;
-            gameObject.transform.localPosition = new Vector3(_x, -value, 0);
+            gameObject.transform.localPosition = new Vector3(_x, -value - 1, 0);
         }
     }
 
@@ -151,7 +150,7 @@ public class Entity : MonoBehaviour
             new Vector2(0, 0),
             32
         );
-        gameObject.transform.localPosition = new Vector3(x, -y, 0);
+        gameObject.transform.localPosition = new Vector3(x, -y - 1, 0);
     }
     
     // Update is called once per frame
@@ -174,7 +173,7 @@ public class Entity : MonoBehaviour
                     // time change * speed
                     _moveTime / _moveDuration
                 );
-                gameObject.transform.localPosition = new Vector3(tmpPos.x, -tmpPos.y, 0);
+                gameObject.transform.localPosition = new Vector3(tmpPos.x, -tmpPos.y - 1, 0);
             }
         }
     }
