@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum EntityType
+public enum SubjectType
 {
     // decoration blocks
     DecorationBush = 1,
@@ -40,34 +40,34 @@ public enum EntityType
     TraitFloat,
 }
 
-public class Entity : MonoBehaviour
+public class Subject : MonoBehaviour
 {
     // will be initialized in Start
     private static Texture2D _texture;
     
-    private static readonly Dictionary<EntityType, EntityType> SubjectToEntityMap = new Dictionary<EntityType,EntityType>
+    private static readonly Dictionary<SubjectType, SubjectType> SubjectToEntityMap = new Dictionary<SubjectType,SubjectType>
     {
-        { EntityType.SubjectPlayer, EntityType.Player },
-        { EntityType.SubjectRock,   EntityType.Rock },
-        { EntityType.SubjectWater,  EntityType.Water },
-        { EntityType.SubjectWall,   EntityType.Wall },
-        { EntityType.SubjectFlag,   EntityType.Flag },
-        { EntityType.SubjectSkull,  EntityType.Skull },
-        { EntityType.SubjectCloud,  EntityType.Cloud }
+        { SubjectType.SubjectPlayer, SubjectType.Player },
+        { SubjectType.SubjectRock,   SubjectType.Rock },
+        { SubjectType.SubjectWater,  SubjectType.Water },
+        { SubjectType.SubjectWall,   SubjectType.Wall },
+        { SubjectType.SubjectFlag,   SubjectType.Flag },
+        { SubjectType.SubjectSkull,  SubjectType.Skull },
+        { SubjectType.SubjectCloud,  SubjectType.Cloud }
     };
     
-    private static readonly Dictionary<EntityType, Type> TraitToBehaviorMap = new Dictionary<EntityType, Type>
+    private static readonly Dictionary<SubjectType, Type> TraitToBehaviorMap = new Dictionary<SubjectType, Type>
     {
-        { EntityType.TraitYou, typeof(You) },/*
-        { EntityType.TraitPush, You },
-        { EntityType.TraitSink, You }
+        { SubjectType.TraitYou, typeof(Traits.You) },
+        { SubjectType.TraitPush, typeof(Traits.Push) },
+        /*{ EntityType.TraitSink, You }
         EntityType.TraitStop,
         EntityType.TraitWin,
         EntityType.TraitLose,
         EntityType.TraitFloat,*/
     };
     
-    private EntityType _type;
+    private SubjectType _type;
     private int _y;
     private int _x;
 
@@ -97,12 +97,12 @@ public class Entity : MonoBehaviour
         }
     }
 
-    public EntityType GetEntityType()
+    public SubjectType GetEntityType()
     {
         return _type;
     }
 
-    public void SetEntityType(EntityType type)
+    public void SetEntityType(SubjectType type)
     {
         _type = type;
     }
@@ -121,22 +121,22 @@ public class Entity : MonoBehaviour
         return _moving;
     }
 
-    public static bool IsSubject(EntityType t)
+    public static bool IsSubject(SubjectType t)
     {
         return SubjectToEntityMap.ContainsKey(t);
     }
 
-    public static EntityType GetSubjectType(EntityType t)
+    public static SubjectType GetSubjectType(SubjectType t)
     {
         return SubjectToEntityMap[t];
     }
 
-    public static bool IsTrait(EntityType t)
+    public static bool IsTrait(SubjectType t)
     {
         return TraitToBehaviorMap.ContainsKey(t);
     }
     
-    public static Type GetTraitBehavior(EntityType t)
+    public static Type GetTraitBehavior(SubjectType t)
     {
         return TraitToBehaviorMap[t];
     }
@@ -150,6 +150,7 @@ public class Entity : MonoBehaviour
             new Vector2(0, 0),
             32
         );
+        gameObject.AddComponent<AnimatedSprite>();
         gameObject.transform.localPosition = new Vector3(x, -y - 1, 0);
     }
     
@@ -167,18 +168,16 @@ public class Entity : MonoBehaviour
             }
             else
             {
-                var tmpPos = Vector2.Lerp(
-                    _moveFrom, 
-                    _moveTo,
-                    // time change * speed
-                    _moveTime / _moveDuration
-                );
+                // ease-in based on y-flipped parabola
+                float PositionFunc(float x) => x * (2 - x);
+
+                var tmpPos = _moveFrom + ((_moveTo - _moveFrom) * (PositionFunc(_moveTime / _moveDuration)));
                 gameObject.transform.localPosition = new Vector3(tmpPos.x, -tmpPos.y - 1, 0);
             }
         }
     }
 
-    public void MoveTo(Vector2 newPos, float duration = 0.15f)
+    public void MoveTo(Vector2 newPos, float duration = 0.18f)
     {
         _moving = true;
         _moveFrom = new Vector2(x, y);

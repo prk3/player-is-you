@@ -15,8 +15,7 @@ public class ObjectFitContain : MonoBehaviour
 
     public bool Contain(float itemWidth, float itemHeight)
     {
-        var screenWidthPx = Screen.width;
-        var screenHeightPx = Screen.height;
+        var (screenWidthPx, screenHeightPx) = Utils.GetScreenSizePx();
 
         if (
             screenWidthPx == _prevScreenWidth &&
@@ -26,11 +25,8 @@ public class ObjectFitContain : MonoBehaviour
         {
             return false;
         }
-        
-        var halfScreenHeight = Camera.main.orthographicSize;
-    
-        var screenHeight = 2 * halfScreenHeight;
-        var screenWidth = ((float)screenWidthPx / screenHeightPx) * screenHeight;
+
+        var (screenWidth, screenHeight) = Utils.GetScreenSize();
     
         var screenRatio = screenWidth / screenHeight;
         var itemRatio = itemWidth / itemHeight;

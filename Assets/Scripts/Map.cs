@@ -12,8 +12,8 @@ public class Map : MonoBehaviour
     public int levelId;
     public int width;
     public int height;
-    public List<Entity>[][] spots;
-    private List<(EntityType, EntityType)> _prevRules;
+    public List<Subject>[][] spots;
+    private List<(SubjectType, SubjectType)> _prevRules;
 
     private ObjectFitContain _contain; 
     
@@ -26,24 +26,24 @@ public class Map : MonoBehaviour
         width = int.Parse(lines[0]);
         height = int.Parse(lines[1]);
 
-        spots = new List<Entity>[height][];
+        spots = new List<Subject>[height][];
 
         for (int y = 0; y < height; y++)
         {
-            spots[y] = new List<Entity>[width];
+            spots[y] = new List<Subject>[width];
             for (int x = 0; x < width; x++)
             {
-                spots[y][x] = new List<Entity>(2); // entities rarely stack in more than 2
+                spots[y][x] = new List<Subject>(2); // entities rarely stack in more than 2
                 var id = int.Parse(lines[2].Substring((width * y + x) * 2, 2));
                 
                 // we skip id 0, which encodes an empty tile
                 if (id == 0) continue;
                 
-                EntityType type;
+                SubjectType type;
                     
                 try
                 {
-                    type = (EntityType) id;
+                    type = (SubjectType) id;
                 }
                 catch (InvalidCastException)
                 {
@@ -53,7 +53,7 @@ public class Map : MonoBehaviour
                     
                 var obj = new GameObject();
                 obj.transform.parent = transform;
-                var entity = obj.AddComponent<Entity>();
+                var entity = obj.AddComponent<Subject>();
                 entity.x = x;
                 entity.y = y;
                 entity.SetEntityType(type);
@@ -61,8 +61,9 @@ public class Map : MonoBehaviour
             }
         }
         
-        _prevRules = new List<(EntityType, EntityType)>();
+        _prevRules = new List<(SubjectType, SubjectType)>();
         UpdateRules();
+        ApplyInitialRules();
 
         _contain = gameObject.AddComponent<ObjectFitContain>();
     }
@@ -78,17 +79,17 @@ public class Map : MonoBehaviour
         }
     }
 
-    List<(EntityType, EntityType)> ExtractRules()
+    List<(SubjectType, SubjectType)> ExtractRules()
     {
-        var output = new List<(EntityType, EntityType)>();
+        var output = new List<(SubjectType, SubjectType)>();
         
         foreach (var row in spots)
         {
             foreach (var column in row)
             {
-                foreach (Entity entity in column)
+                foreach (Subject entity in column)
                 {
-                    if (entity.GetEntityType() == EntityType.ConnectorIs)
+                    if (entity.GetEntityType() == SubjectType.ConnectorIs)
                     {
                         ExtractRulesFromConnectorIs(entity, output);
                     }
@@ -99,36 +100,36 @@ public class Map : MonoBehaviour
         return output;
     }
 
-    private void ExtractRulesFromConnectorIs(Entity entity, List<(EntityType, EntityType)> list)
+    private void ExtractRulesFromConnectorIs(Subject subject, List<(SubjectType, SubjectType)> list)
     {
         // is connector can be a part of a vertical rule
-        if (entity.y != 0 && entity.y != height - 1)
+        if (subject.y != 0 && subject.y != height - 1)
         {
-            ExtractRulesFromSpots(spots[entity.y - 1][entity.x], spots[entity.y + 1][entity.x], list);
+            ExtractRulesFromSpots(spots[subject.y - 1][subject.x], spots[subject.y + 1][subject.x], list);
         }
         
         // is connector can be a part of a horizontal rule
-        if (entity.x != 0 && entity.x != width - 1)
+        if (subject.x != 0 && subject.x != width - 1)
         {
-            ExtractRulesFromSpots(spots[entity.y][entity.x - 1], spots[entity.y][entity.x + 1], list);
+            ExtractRulesFromSpots(spots[subject.y][subject.x - 1], spots[subject.y][subject.x + 1], list);
         }
     }
 
-    private void ExtractRulesFromSpots(List<Entity> primarySpot, List<Entity> secondarySpot, List<(EntityType, EntityType)> list)
+    private void ExtractRulesFromSpots(List<Subject> primarySpot, List<Subject> secondarySpot, List<(SubjectType, SubjectType)> list)
     {
         foreach (var primary in primarySpot)
         {
             var primaryType = primary.GetEntityType();
-            var isPrimarySubject = Entity.IsSubject(primaryType);
-            var isPrimaryTrait = Entity.IsTrait(primaryType);
+            var isPrimarySubject = Subject.IsSubject(primaryType);
+            var isPrimaryTrait = Subject.IsTrait(primaryType);
 
             if (!isPrimarySubject && !isPrimaryTrait) continue;
                 
             foreach (var secondary in secondarySpot)
             {
                 var secondaryType = secondary.GetEntityType();
-                var isSecondarySubject = Entity.IsSubject(secondaryType);
-                var isSecondaryTrait = Entity.IsTrait(secondaryType);
+                var isSecondarySubject = Subject.IsSubject(secondaryType);
+                var isSecondaryTrait = Subject.IsTrait(secondaryType);
 
                 if (isPrimarySubject && isSecondaryTrait)
                 {
@@ -151,31 +152,49 @@ public class Map : MonoBehaviour
 
         foreach (var (subject, trait) in deletedRules)
         {
-            var targetType = Entity.GetSubjectType(subject);
-            var entities = gameObject.GetComponentsInChildren<Entity>();
+            var targetType = Subject.GetSubjectType(subject);
+            var entities = gameObject.GetComponentsInChildren<Subject>();
 
             foreach (var entity in entities)
             {
                 if (entity.GetEntityType() != targetType) continue;
                 
-                var component = entity.gameObject.GetComponent(Entity.GetTraitBehavior(trait));
+                var component = entity.gameObject.GetComponent(Subject.GetTraitBehavior(trait));
                 if (component) Destroy(component);
             }
         }
         
         foreach (var (subject, trait) in addedRules)
         {
-            var targetType = Entity.GetSubjectType(subject);
-            var entities = gameObject.GetComponentsInChildren<Entity>();
+            var targetType = Subject.GetSubjectType(subject);
+            var entities = gameObject.GetComponentsInChildren<Subject>();
 
             foreach (var entity in entities)
             {
                 if (entity.GetEntityType() != targetType) continue;
 
-                entity.gameObject.AddComponent(Entity.GetTraitBehavior(trait));
+                entity.gameObject.AddComponent(Subject.GetTraitBehavior(trait));
             }
         }
 
         _prevRules = newRules;
+    }
+
+    void ApplyInitialRules()
+    {
+        foreach (var row in spots)
+        {
+            foreach (var spot in row)
+            {
+                foreach (var entity in spot)
+                {
+                    var type = entity.GetEntityType();
+                    if (Subject.IsSubject(type) || Subject.IsTrait(type) || type == SubjectType.ConnectorIs)
+                    {
+                        entity.gameObject.AddComponent<Traits.Push>();
+                    }
+                }
+            }
+        }
     }
 }

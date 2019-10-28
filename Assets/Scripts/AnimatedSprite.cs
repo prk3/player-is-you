@@ -1,5 +1,4 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 
 public class AnimatedSprite : MonoBehaviour
@@ -30,15 +29,16 @@ public class AnimatedSprite : MonoBehaviour
     {
         _currentSpriteIndex = _currentSpriteIndex >= numberOfSprites - 1 ? 0 : _currentSpriteIndex + 1; 
 
-        var renderer = gameObject.GetComponent<SpriteRenderer>();
-        var sprite = renderer.sprite;
+        var ren = gameObject.GetComponent<SpriteRenderer>();
+        var sprite = ren.sprite;
         var oldRect = sprite.textureRect;
-        
+
         // texture and pivot stay the same, rect changes it's y position
-        renderer.sprite = Sprite.Create(
+        ren.sprite = Sprite.Create(
             sprite.texture,
             new Rect(oldRect.x, oldRect.height * _currentSpriteIndex, oldRect.width, oldRect.height),
-            sprite.pivot
+            sprite.pivot,
+            sprite.pixelsPerUnit
         );
     }
 }

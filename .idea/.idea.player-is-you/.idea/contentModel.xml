@@ -15,10 +15,23 @@
           <e p="Alphabet.cs" t="Include" />
           <e p="AnimatedSprite.cs" t="Include" />
           <e p="AnimatedText.cs" t="Include" />
-          <e p="Entity.cs" t="Include" />
           <e p="Map.cs" t="Include" />
+          <e p="Menu.cs" t="Include" />
           <e p="ObjectFitContain.cs" t="Include" />
-          <e p="You.cs" t="Include" />
+          <e p="StateTransition.cs" t="Include" />
+          <e p="States" t="Include">
+            <e p="Gameplay.cs" t="Include" />
+            <e p="MainMenu.cs" t="Include" />
+          </e>
+          <e p="Subjects" t="Include">
+            <e p="Subject.cs" t="Include" />
+          </e>
+          <e p="Traits" t="Include">
+            <e p="Push.cs" t="Include" />
+            <e p="Trait.cs" t="Include" />
+            <e p="You.cs" t="Include" />
+          </e>
+          <e p="Utils.cs" t="Include" />
         </e>
       </e>
       <e p="Temp/bin" t="ExcludeRecursive" />
