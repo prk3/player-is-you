@@ -24,11 +24,17 @@
             <e p="MainMenu.cs" t="Include" />
           </e>
           <e p="Subjects" t="Include">
+            <e p="EdgeTile.cs" t="Include" />
             <e p="Subject.cs" t="Include" />
           </e>
           <e p="Traits" t="Include">
+            <e p="Float.cs" t="Include" />
+            <e p="Lose.cs" t="Include" />
             <e p="Push.cs" t="Include" />
+            <e p="Sink.cs" t="Include" />
+            <e p="Stop.cs" t="Include" />
             <e p="Trait.cs" t="Include" />
+            <e p="Win.cs" t="Include" />
             <e p="You.cs" t="Include" />
           </e>
           <e p="Utils.cs" t="Include" />

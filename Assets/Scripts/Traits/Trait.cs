@@ -1,22 +1,39 @@
+using Subjects;
 using UnityEngine;
+
+public enum OnEnterOutcome
+{
+    PullDown,
+    Break,
+    Continue,
+}
+
+public enum AfterEnterOutcome
+{
+    InteractionContinue,
+    InteractionStop,
+}
 
 namespace Traits
 {
-    public class Trait : MonoBehaviour
+    public abstract class Trait : MonoBehaviour
     {
-        public void canEnter(Subject e)
+
+        public abstract int GetInteractionOrder();
+        
+        public virtual bool CanEnter(Subject entering)
         {
-            
+            return true;
         }
 
-        public void beforeEnter(Subject e)
+        public virtual OnEnterOutcome OnEnter(Subject entering)
         {
-            
+            return OnEnterOutcome.Continue;
         }
 
-        public void afterEnter(Subject e)
+        public virtual AfterEnterOutcome AfterEnter(Subject entering)
         {
-            
+            return AfterEnterOutcome.InteractionContinue;
         }
     }
 }

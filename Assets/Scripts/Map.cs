@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Subjects;
 using UnityEngine;
 
 /**
@@ -53,11 +54,12 @@ public class Map : MonoBehaviour
                     
                 var obj = new GameObject();
                 obj.transform.parent = transform;
-                var entity = obj.AddComponent<Subject>();
-                entity.x = x;
-                entity.y = y;
-                entity.SetEntityType(type);
-                spots[y][x].Add(entity);
+                var subject = obj.AddComponent<Subject>();
+                subject.SetEntityType(type);
+                subject.x = x;
+                subject.y = y;
+                subject.z = 0;
+                spots[y][x].Add(subject);
             }
         }
         
@@ -79,6 +81,11 @@ public class Map : MonoBehaviour
         }
     }
 
+    public bool IsValidSpot(int x, int y)
+    {
+        return x >= 0 && x < width && y >= 0 && y < height;
+    }
+    
     List<(SubjectType, SubjectType)> ExtractRules()
     {
         var output = new List<(SubjectType, SubjectType)>();
@@ -180,7 +187,7 @@ public class Map : MonoBehaviour
         _prevRules = newRules;
     }
 
-    void ApplyInitialRules()
+    private void ApplyInitialRules()
     {
         foreach (var row in spots)
         {
