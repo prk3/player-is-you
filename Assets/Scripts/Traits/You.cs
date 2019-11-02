@@ -70,7 +70,7 @@ namespace Traits
 
             if (!map.IsValidSpot(toX, toY)) return false;
 
-            var stack = map.spots[toY][toX];
+            var stack = map.stacks[toY][toX];
             return stack.TrueForAll(subject =>
             {
                 return subject.GetComponents<Trait>().ToList().TrueForAll(trait => trait.CanEnter(thisSubject));
@@ -86,8 +86,8 @@ namespace Traits
             int toX = thisSubject.x + deltaX;
             int toY = thisSubject.y + deltaY;
 
-            List<Subject> oldStack = map.spots[thisSubject.y][thisSubject.x];
-            List<Subject> newStack = map.spots[toY][toX];
+            List<Subject> oldStack = map.stacks[thisSubject.y][thisSubject.x];
+            List<Subject> newStack = map.stacks[toY][toX];
             thisSubject.z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
 
             oldStack.Remove(thisSubject);

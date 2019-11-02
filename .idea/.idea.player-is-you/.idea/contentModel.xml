@@ -24,9 +24,9 @@
             <e p="MainMenu.cs" t="Include" />
           </e>
           <e p="Subjects" t="Include">
-            <e p="EdgeTile.cs" t="Include" />
             <e p="Subject.cs" t="Include" />
           </e>
+          <e p="TileMod.cs" t="Include" />
           <e p="Traits" t="Include">
             <e p="Float.cs" t="Include" />
             <e p="Lose.cs" t="Include" />

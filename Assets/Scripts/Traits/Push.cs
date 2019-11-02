@@ -23,7 +23,7 @@ namespace Traits
 
             if (!map.IsValidSpot(nextX, nextY)) return false;
             
-            List<Subject> stackToPush = map.spots[nextY][nextX];
+            List<Subject> stackToPush = map.stacks[nextY][nextX];
             return stackToPush.TrueForAll(subject =>
                 {
                     return subject.GetComponents<Trait>().ToList().TrueForAll(trait => trait.CanEnter(thisSubject));
@@ -41,8 +41,8 @@ namespace Traits
             int toY = thisSubject.y + deltaY;
             Map map = gameObject.GetComponentInParent<Map>();
 
-            List<Subject> oldStack = map.spots[thisSubject.y][thisSubject.x];
-            List<Subject> newStack = map.spots[toY][toX];
+            List<Subject> oldStack = map.stacks[thisSubject.y][thisSubject.x];
+            List<Subject> newStack = map.stacks[toY][toX];
             thisSubject.z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
 
             oldStack.Remove(thisSubject);

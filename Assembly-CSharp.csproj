@@ -14,8 +14,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.20506</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RootNamespace>
-    </RootNamespace>
+    <RootNamespace></RootNamespace>
     <ProjectGuid>{EBDA2781-248B-CC9B-4F15-65B5DA069737}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -69,8 +68,8 @@
     <Compile Include="Assets\Scripts\States\Gameplay.cs" />
     <Compile Include="Assets\Scripts\States\MainMenu.cs" />
     <Compile Include="Assets\Scripts\StateTransition.cs" />
-    <Compile Include="Assets\Scripts\Subjects\EdgeTile.cs" />
     <Compile Include="Assets\Scripts\Subjects\Subject.cs" />
+    <Compile Include="Assets\Scripts\TileMod.cs" />
     <Compile Include="Assets\Scripts\Traits\Float.cs" />
     <Compile Include="Assets\Scripts\Traits\Lose.cs" />
     <Compile Include="Assets\Scripts\Traits\Push.cs" />

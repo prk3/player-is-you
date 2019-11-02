@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Subjects;
 using UnityEngine;
 
@@ -13,10 +14,10 @@ public class Map : MonoBehaviour
     public int levelId;
     public int width;
     public int height;
-    public List<Subject>[][] spots;
+    public List<Subject>[][] stacks;
     private List<(SubjectType, SubjectType)> _prevRules;
 
-    private ObjectFitContain _contain; 
+    private ObjectFitContain _contain;
     
     void Start()
     {
@@ -27,14 +28,15 @@ public class Map : MonoBehaviour
         width = int.Parse(lines[0]);
         height = int.Parse(lines[1]);
 
-        spots = new List<Subject>[height][];
+        stacks = new List<Subject>[height][];
 
+        
         for (int y = 0; y < height; y++)
         {
-            spots[y] = new List<Subject>[width];
+            stacks[y] = new List<Subject>[width];
             for (int x = 0; x < width; x++)
             {
-                spots[y][x] = new List<Subject>(2); // entities rarely stack in more than 2
+                stacks[y][x] = new List<Subject>(2); // entities rarely stack in more than 2
                 var id = int.Parse(lines[2].Substring((width * y + x) * 2, 2));
                 
                 // we skip id 0, which encodes an empty tile
@@ -51,15 +53,9 @@ public class Map : MonoBehaviour
                     Debug.LogWarning($"Invalid entity type {id} in map file {levelFile}");
                     continue;
                 }
-                    
-                var obj = new GameObject();
-                obj.transform.parent = transform;
-                var subject = obj.AddComponent<Subject>();
-                subject.SetEntityType(type);
-                subject.x = x;
-                subject.y = y;
-                subject.z = 0;
-                spots[y][x].Add(subject);
+
+                var tile = MakeTile(x, y, type);
+                stacks[y][x].Add(tile.GetComponent<Subject>());
             }
         }
         
@@ -80,23 +76,86 @@ public class Map : MonoBehaviour
             gameObject.transform.localPosition = new Vector3(localPos.x, -localPos.y, localPos.z);
         }
     }
+    
+    private GameObject MakeTile(int x, int y, SubjectType type)
+    {
+        var obj = new GameObject();
+        obj.transform.parent = gameObject.transform;
+        
+        var ren = obj.AddComponent<SpriteRenderer>();
+        ren.sprite = Sprite.Create(
+            Subject.GetTexture(),
+            new Rect(32 * (int) (type-1), 0, 32, 32),
+            new Vector2(0, 0),
+            32
+        );
+        
+        var subject = obj.AddComponent<Subject>();
+        subject.SetEntityType(type);
+        subject.x = x;
+        subject.y = y;
+        subject.z = 0;
+            
+        gameObject.AddComponent<AnimatedSprite>();
+            
+        var mod = Subject.GetModTilemap(type);
+
+        if (mod == null)
+        {
+            var modComp = gameObject.AddComponent<TileMod>();
+            var map = gameObject.GetComponentInParent<Map>();
+            modComp.ModTilemap = mod;
+            modComp.ApplyMod(map.CollectNeighborsByte(subject));
+        }
+
+        return obj;
+    }
+
 
     public bool IsValidSpot(int x, int y)
     {
         return x >= 0 && x < width && y >= 0 && y < height;
     }
-    
+
+    public byte CollectNeighborsByte(Subject s, bool bitForMissingNeighbors = false)
+    {
+        
+        SubjectType type = s.GetSubjectType();
+
+        bool CollectStack(int x, int y)
+        {
+            if (!IsValidSpot(x, y)) return bitForMissingNeighbors;
+            return stacks[y][x].Find(subject => subject.GetSubjectType() == type);
+        }
+        
+        byte output = 0;
+        
+        output |= (byte)(CollectStack(s.x - 1, s.y - 1) ?   1 : 0);
+        output |= (byte)(CollectStack(s.x + 0, s.y - 1) ?   2 : 0);
+        output |= (byte)(CollectStack(s.x + 1, s.y - 1) ?   4 : 0);
+        
+        output |= (byte)(CollectStack(s.x - 1, s.y + 0) ?   8 : 0);
+        
+        output |= (byte)(CollectStack(s.x + 1, s.y + 0) ?  16 : 0);
+        
+        output |= (byte)(CollectStack(s.x - 1, s.y + 1) ?  32 : 0);
+        output |= (byte)(CollectStack(s.x + 0, s.y + 1) ?  64 : 0);
+        output |= (byte)(CollectStack(s.x + 1, s.y + 1) ? 128 : 0);
+
+        return output;
+    }
+
     List<(SubjectType, SubjectType)> ExtractRules()
     {
         var output = new List<(SubjectType, SubjectType)>();
         
-        foreach (var row in spots)
+        foreach (var row in stacks)
         {
             foreach (var column in row)
             {
                 foreach (Subject entity in column)
                 {
-                    if (entity.GetEntityType() == SubjectType.ConnectorIs)
+                    if (entity.GetSubjectType() == SubjectType.ConnectorIs)
                     {
                         ExtractRulesFromConnectorIs(entity, output);
                     }
@@ -112,13 +171,13 @@ public class Map : MonoBehaviour
         // is connector can be a part of a vertical rule
         if (subject.y != 0 && subject.y != height - 1)
         {
-            ExtractRulesFromSpots(spots[subject.y - 1][subject.x], spots[subject.y + 1][subject.x], list);
+            ExtractRulesFromSpots(stacks[subject.y - 1][subject.x], stacks[subject.y + 1][subject.x], list);
         }
         
         // is connector can be a part of a horizontal rule
         if (subject.x != 0 && subject.x != width - 1)
         {
-            ExtractRulesFromSpots(spots[subject.y][subject.x - 1], spots[subject.y][subject.x + 1], list);
+            ExtractRulesFromSpots(stacks[subject.y][subject.x - 1], stacks[subject.y][subject.x + 1], list);
         }
     }
 
@@ -126,7 +185,7 @@ public class Map : MonoBehaviour
     {
         foreach (var primary in primarySpot)
         {
-            var primaryType = primary.GetEntityType();
+            var primaryType = primary.GetSubjectType();
             var isPrimarySubject = Subject.IsSubject(primaryType);
             var isPrimaryTrait = Subject.IsTrait(primaryType);
 
@@ -134,7 +193,7 @@ public class Map : MonoBehaviour
                 
             foreach (var secondary in secondarySpot)
             {
-                var secondaryType = secondary.GetEntityType();
+                var secondaryType = secondary.GetSubjectType();
                 var isSecondarySubject = Subject.IsSubject(secondaryType);
                 var isSecondaryTrait = Subject.IsTrait(secondaryType);
 
@@ -164,7 +223,7 @@ public class Map : MonoBehaviour
 
             foreach (var entity in entities)
             {
-                if (entity.GetEntityType() != targetType) continue;
+                if (entity.GetSubjectType() != targetType) continue;
                 
                 var component = entity.gameObject.GetComponent(Subject.GetTraitBehavior(trait));
                 if (component) Destroy(component);
@@ -178,7 +237,7 @@ public class Map : MonoBehaviour
 
             foreach (var entity in entities)
             {
-                if (entity.GetEntityType() != targetType) continue;
+                if (entity.GetSubjectType() != targetType) continue;
 
                 entity.gameObject.AddComponent(Subject.GetTraitBehavior(trait));
             }
@@ -189,13 +248,13 @@ public class Map : MonoBehaviour
 
     private void ApplyInitialRules()
     {
-        foreach (var row in spots)
+        foreach (var row in stacks)
         {
             foreach (var spot in row)
             {
                 foreach (var entity in spot)
                 {
-                    var type = entity.GetEntityType();
+                    var type = entity.GetSubjectType();
                     if (Subject.IsSubject(type) || Subject.IsTrait(type) || type == SubjectType.ConnectorIs)
                     {
                         entity.gameObject.AddComponent<Traits.Push>();

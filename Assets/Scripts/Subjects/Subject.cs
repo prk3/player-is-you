@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Subjects
@@ -76,6 +77,9 @@ namespace Subjects
             { SubjectType.TraitLose, typeof(Traits.Lose) },
             { SubjectType.TraitFloat, typeof(Traits.Float) }
         };
+
+        // will be initialized in Start
+        private static Dictionary<SubjectType, Texture2D> _subjectTypeToModTilemap;
     
         private SubjectType _type;
         private int _y;
@@ -122,7 +126,7 @@ namespace Subjects
             }
         }
 
-        public SubjectType GetEntityType()
+        public SubjectType GetSubjectType()
         {
             return _type;
         }
@@ -134,11 +138,28 @@ namespace Subjects
 
         public static Texture2D GetTexture()
         {
-            if (_texture != null) return _texture;
-            _texture = Resources.Load<Texture2D>("Textures/entities");
-            _texture.filterMode = FilterMode.Point;
+            if (_texture == null)
+            {
+                _texture = Resources.Load<Texture2D>("Textures/entities");
+                _texture.filterMode = FilterMode.Point;
+            }
 
             return _texture;
+        }
+
+        public static Texture2D GetModTilemap(SubjectType type)
+        {
+            if (_subjectTypeToModTilemap == null)
+            {
+                _subjectTypeToModTilemap = new Dictionary<SubjectType, Texture2D>()
+                {
+                    { SubjectType.Water, Resources.Load<Texture2D>("Textures/water_mod") },
+                    //{ SubjectType.Wall, Resources.Load<Texture2D>("Textures/water_mod") },
+                };
+            }
+
+            _subjectTypeToModTilemap.TryGetValue(type, out var output);
+            return output;
         }
 
         public static (int, int) DirectionToVector(MoveDirection dir)
@@ -180,14 +201,6 @@ namespace Subjects
     
         void Start()
         {
-            var r = gameObject.AddComponent<SpriteRenderer>();
-            r.sprite = Sprite.Create(
-                GetTexture(),
-                new Rect(32 * (int) (_type-1), 0, 32, 32),
-                new Vector2(0, 0),
-                32
-            );
-            gameObject.AddComponent<AnimatedSprite>();
             gameObject.transform.localPosition = new Vector3(x, -y - 1, 0);
         }
     
