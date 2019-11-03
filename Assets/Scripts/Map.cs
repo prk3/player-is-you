@@ -18,7 +18,7 @@ public class Map : MonoBehaviour
     private List<(SubjectType, SubjectType)> _prevRules;
 
     private ObjectFitContain _contain;
-    
+
     void Start()
     {
         string levelFile = $"Levels/{levelId}";
@@ -29,7 +29,6 @@ public class Map : MonoBehaviour
         height = int.Parse(lines[1]);
 
         stacks = new List<Subject>[height][];
-
         
         for (int y = 0; y < height; y++)
         {
@@ -82,39 +81,37 @@ public class Map : MonoBehaviour
         var obj = new GameObject();
         obj.transform.parent = gameObject.transform;
         
-        var ren = obj.AddComponent<SpriteRenderer>();
-        ren.sprite = Sprite.Create(
-            Subject.GetTexture(),
-            new Rect(32 * (int) (type-1), 0, 32, 32),
-            new Vector2(0, 0),
-            32
-        );
         
         var subject = obj.AddComponent<Subject>();
         subject.SetEntityType(type);
         subject.x = x;
         subject.y = y;
         subject.z = 0;
-            
-        gameObject.AddComponent<AnimatedSprite>();
-            
+        
+        var ren = obj.AddComponent<SpriteRenderer>();
+        ren.sprite = Sprite.Create(
+            Subject.GetTexture(),
+            new Rect(32 * (int) (type-1), 0, 32, 32),
+            new Vector2(0, 0),
+            32);
+
+        obj.AddComponent<AnimatedSprite>();
+
         var mod = Subject.GetModTilemap(type);
 
-        if (mod == null)
+        if (mod != null)
         {
-            var modComp = gameObject.AddComponent<TileMod>();
-            var map = gameObject.GetComponentInParent<Map>();
+            var modComp = obj.AddComponent<TileMod>();
             modComp.ModTilemap = mod;
-            modComp.ApplyMod(map.CollectNeighborsByte(subject));
         }
 
         return obj;
     }
 
 
-    public bool IsValidSpot(int x, int y)
+    public bool IsValidSpot(Vector2Int pos)
     {
-        return x >= 0 && x < width && y >= 0 && y < height;
+        return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height;
     }
 
     public byte CollectNeighborsByte(Subject s, bool bitForMissingNeighbors = false)
@@ -124,7 +121,7 @@ public class Map : MonoBehaviour
 
         bool CollectStack(int x, int y)
         {
-            if (!IsValidSpot(x, y)) return bitForMissingNeighbors;
+            if (!IsValidSpot(new Vector2Int(x, y))) return bitForMissingNeighbors;
             return stacks[y][x].Find(subject => subject.GetSubjectType() == type);
         }
         

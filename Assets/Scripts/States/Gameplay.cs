@@ -6,9 +6,12 @@ namespace States
     {
         void Start()
         {
-            gameObject.AddComponent<StateTransition>();
-
-            var map = gameObject.AddComponent<Map>();
+            var transition = gameObject.AddComponent<StateTransition>();
+            
+            var gameBoard = new GameObject();
+            gameBoard.transform.parent = gameObject.transform;
+            
+            var map = gameBoard.AddComponent<Map>();
             map.levelId = 0;
         }
     }

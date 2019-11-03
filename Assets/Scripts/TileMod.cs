@@ -1,3 +1,5 @@
+using System;
+using Subjects;
 using UnityEngine;
 
 public class TileMod : MonoBehaviour
@@ -11,12 +13,12 @@ public class TileMod : MonoBehaviour
      */
     private static byte[] _modPositions =
     {
-        (6 << 4) + 5, //   0
-        (6 << 4) + 5, //   1
+        (4 << 4) + 5, //   0
+        (4 << 4) + 5, //   1
         (2 << 4) + 0, //   2
         (2 << 4) + 0, //   3
-        (6 << 4) + 5, //   4
-        (6 << 4) + 5, //   5
+        (4 << 4) + 5, //   4
+        (4 << 4) + 5, //   5
         (2 << 4) + 0, //   6
         (2 << 4) + 0, //   7
         (1 << 4) + 0, //   8
@@ -36,23 +38,23 @@ public class TileMod : MonoBehaviour
         (3 << 4) + 0, //  21
         (7 << 4) + 0, //  22
         (7 << 4) + 0, //  23
-        (5 << 4) + 5, //  24
-        (5 << 4) + 5, //  25
+        (7 << 4) + 4, //  24
+        (7 << 4) + 4, //  25
         (2 << 4) + 3, //  26
         (6 << 4) + 2, //  27
-        (5 << 4) + 5, //  28
-        (5 << 4) + 5, //  29
+        (7 << 4) + 4, //  28
+        (7 << 4) + 4, //  29
         (2 << 4) + 2, //  30
         (6 << 4) + 1, //  31
         
         // 5th bit is the bottom left corner
         // the following 32 numbers are the same as elements [0, 31]
-        (6 << 4) + 5, //  32
-        (6 << 4) + 5, //  33
+        (4 << 4) + 5, //  32
+        (4 << 4) + 5, //  33
         (2 << 4) + 0, //  34
         (2 << 4) + 0, //  35
-        (6 << 4) + 5, //  36
-        (6 << 4) + 5, //  37
+        (4 << 4) + 5, //  36
+        (4 << 4) + 5, //  37
         (2 << 4) + 0, //  38
         (2 << 4) + 0, //  39
         (1 << 4) + 0, //  40
@@ -72,23 +74,23 @@ public class TileMod : MonoBehaviour
         (3 << 4) + 0, //  53
         (7 << 4) + 0, //  54
         (7 << 4) + 0, //  55
-        (5 << 4) + 5, //  56
-        (5 << 4) + 5, //  57
+        (7 << 4) + 4, //  56
+        (7 << 4) + 4, //  57
         (2 << 4) + 3, //  58
         (6 << 4) + 2, //  59
-        (5 << 4) + 5, //  60
-        (5 << 4) + 5, //  61
+        (7 << 4) + 4, //  60
+        (7 << 4) + 4, //  61
         (2 << 4) + 2, //  62
         (6 << 4) + 1, //  63
         
         (0 << 4) + 0, //  64
         (0 << 4) + 0, //  65
-        (4 << 4) + 5, //  66
-        (4 << 4) + 5, //  67
+        (6 << 4) + 4, //  66
+        (6 << 4) + 4, //  67
         (0 << 4) + 0, //  68
         (0 << 4) + 0, //  69
-        (4 << 4) + 5, //  70
-        (4 << 4) + 5, //  71
+        (6 << 4) + 4, //  70
+        (6 << 4) + 4, //  71
         (1 << 4) + 1, //  72
         (1 << 4) + 1, //  73
         (1 << 4) + 3, //  74
@@ -108,7 +110,7 @@ public class TileMod : MonoBehaviour
         (7 << 4) + 2, //  87
         (0 << 4) + 3, //  88
         (0 << 4) + 3, //  89
-        (7 << 4) + 5, //  90
+        (5 << 4) + 5, //  90
         (2 << 4) + 5, //  91
         (0 << 4) + 3, //  92
         (0 << 4) + 3, //  93
@@ -117,12 +119,12 @@ public class TileMod : MonoBehaviour
         
         (0 << 4) + 0, //  96
         (0 << 4) + 0, //  97
-        (4 << 4) + 5, //  98
-        (4 << 4) + 5, //  99
+        (6 << 4) + 4, //  98
+        (6 << 4) + 4, //  99
         (0 << 4) + 0, // 100
         (0 << 4) + 0, // 101
-        (4 << 4) + 5, // 102
-        (4 << 4) + 5, // 103
+        (6 << 4) + 4, // 102
+        (6 << 4) + 4, // 103
         (5 << 4) + 0, // 104
         (5 << 4) + 0, // 105
         (5 << 4) + 2, // 106
@@ -146,18 +148,17 @@ public class TileMod : MonoBehaviour
         (2 << 5) + 4, // 123
         (0 << 4) + 2, // 124
         (0 << 4) + 2, // 125
-        (7 << 4) + 4, // 126
-        (7 << 4) + 4, // 126
+        (5 << 4) + 4, // 126
         (7 << 4) + 3, // 127
         
         // 7th bit in the bottom right corner
         // the following 64 numbers are the same as elements [0, 63]
-        (6 << 4) + 5, // 128
-        (6 << 4) + 5, // 129
+        (4 << 4) + 5, // 128
+        (4 << 4) + 5, // 129
         (2 << 4) + 0, // 130
         (2 << 4) + 0, // 131
-        (6 << 4) + 5, // 132
-        (6 << 4) + 5, // 133
+        (4 << 4) + 5, // 132
+        (4 << 4) + 5, // 133
         (2 << 4) + 0, // 134
         (2 << 4) + 0, // 135
         (1 << 4) + 0, // 136
@@ -177,22 +178,22 @@ public class TileMod : MonoBehaviour
         (3 << 4) + 0, // 149
         (7 << 4) + 0, // 150
         (7 << 4) + 0, // 151
-        (5 << 4) + 5, // 152
-        (5 << 4) + 5, // 153
+        (7 << 4) + 4, // 152
+        (7 << 4) + 4, // 153
         (2 << 4) + 3, // 154
         (6 << 4) + 2, // 155
-        (5 << 4) + 5, // 156
-        (5 << 4) + 5, // 157
+        (7 << 4) + 4, // 156
+        (7 << 4) + 4, // 157
         (2 << 4) + 2, // 158
         (6 << 4) + 1, // 159
         
         // repeating [0, 31] here
-        (6 << 4) + 5, // 160
-        (6 << 4) + 5, // 161
+        (4 << 4) + 5, // 160
+        (4 << 4) + 5, // 161
         (2 << 4) + 0, // 162
         (2 << 4) + 0, // 163
-        (6 << 4) + 5, // 164
-        (6 << 4) + 5, // 165
+        (4 << 4) + 5, // 164
+        (4 << 4) + 5, // 165
         (2 << 4) + 0, // 166
         (2 << 4) + 0, // 167
         (1 << 4) + 0, // 168
@@ -212,24 +213,24 @@ public class TileMod : MonoBehaviour
         (3 << 4) + 0, // 181
         (7 << 4) + 0, // 182
         (7 << 4) + 0, // 183
-        (5 << 4) + 5, // 184
-        (5 << 4) + 5, // 185
+        (7 << 4) + 4, // 184
+        (7 << 4) + 4, // 185
         (2 << 4) + 3, // 186
         (6 << 4) + 2, // 187
-        (5 << 4) + 5, // 188
-        (5 << 4) + 5, // 189
+        (7 << 4) + 4, // 188
+        (7 << 4) + 4, // 189
         (2 << 4) + 2, // 190
         (6 << 4) + 1, // 191
         
         // repeating [64, 79] here
         (0 << 4) + 0, // 192
         (0 << 4) + 0, // 193
-        (4 << 4) + 5, // 194
-        (4 << 4) + 5, // 195
+        (6 << 4) + 4, // 194
+        (6 << 4) + 4, // 195
         (0 << 4) + 0, // 196
         (0 << 4) + 0, // 197
-        (4 << 4) + 5, // 198
-        (4 << 4) + 5, // 199
+        (6 << 4) + 4, // 198
+        (6 << 4) + 4, // 199
         (1 << 4) + 1, // 200
         (1 << 4) + 1, // 201
         (1 << 4) + 3, // 202
@@ -258,12 +259,12 @@ public class TileMod : MonoBehaviour
         
         (0 << 4) + 0, // 224
         (0 << 4) + 0, // 225
-        (4 << 4) + 5, // 226
-        (4 << 4) + 5, // 227
+        (6 << 4) + 4, // 226
+        (6 << 4) + 4, // 227
         (0 << 4) + 0, // 228
         (0 << 4) + 0, // 229
-        (4 << 4) + 5, // 230
-        (4 << 4) + 5, // 231
+        (6 << 4) + 4, // 230
+        (6 << 4) + 4, // 231
         (5 << 4) + 0, // 232
         (5 << 4) + 0, // 233
         (5 << 4) + 2, // 234
@@ -288,8 +289,7 @@ public class TileMod : MonoBehaviour
         (4 << 4) + 1, // 252
         (4 << 4) + 1, // 253
         (5 << 4) + 3, // 254
-        
-        // blocks all around: regular render
+        (6 << 4) + 5, // 255
     };
 
     /**
@@ -311,27 +311,27 @@ public class TileMod : MonoBehaviour
      */
     public static Texture2D MakeModdedTexture(Texture2D source, Vector2Int sourcePosition, Texture2D mod, Vector2Int modPosition, Vector2Int size)
     {
+        // texture pixels are laid out left-to-right, bottom-to-top
+        // yes, bottom-to-top (Oo)
+        
         Color32[] sourcePixels = source.GetPixels32();
-        Color32[] modPixels = source.GetPixels32();
+        Color32[] modPixels = mod.GetPixels32();
         Color32[] newPixels = new Color32[size.x * size.y];
         Color32 maskColor = new Color32(255, 0, 255, 255);
+
+        int modYStart = mod.height - modPosition.y - size.y;
+        int sourceYStart = source.height - sourcePosition.y - size.y;
 
         int index = 0;
         for (int y = 0; y < size.y; y++)
         {
             for (int x = 0; x < size.x; x++)
             {
-                var modPixel = modPixels[mod.width * (modPosition.y + y) + modPosition.x + x];
-                if (!modPixel.Equals(maskColor))
-                {
-                    newPixels[index] = modPixel;
-                }
-                else
-                {
-                    newPixels[index] = sourcePixels[source.width * (sourcePosition.y + y) + sourcePosition.x + x];
-                }
+                var modPixel = modPixels[mod.width * (modYStart + y) + modPosition.x + x];
 
-                index++;
+                newPixels[index++] = modPixel.Equals(maskColor)
+                    ? sourcePixels[source.width * (sourceYStart + y) + sourcePosition.x + x]
+                    : modPixel;
             }
         }
         
@@ -344,6 +344,13 @@ public class TileMod : MonoBehaviour
     public Texture2D ModTilemap;
     public int ModWidth = 32;
     public int ModHeight = 32;
+
+    void Start()
+    {
+        var subject = gameObject.GetComponent<Subject>();
+        var map = gameObject.GetComponentInParent<Map>();
+        ApplyMod(map.CollectNeighborsByte(subject));
+    }
     
     public void ApplyMod(byte neighbors)
     {
@@ -357,6 +364,7 @@ public class TileMod : MonoBehaviour
             return;
         }
         
+        Debug.Assert(false, "fuck");
         // otherwise, just apply mod to SpriteRenderer
         var rendererComp = gameObject.GetComponent<SpriteRenderer>();
         if (rendererComp)
@@ -364,8 +372,8 @@ public class TileMod : MonoBehaviour
             Sprite s = rendererComp.sprite;
             
             // new texture should have the same size as old one
-            Debug.Assert(s.texture.width == ModWidth);
-            Debug.Assert(s.texture.height == ModHeight);
+            Debug.Assert((int)s.textureRect.width == ModWidth);
+            Debug.Assert((int)s.textureRect.height == ModHeight);
             
             Texture2D newTexture = MakeModdedTexture(
                 s.texture,

@@ -64,13 +64,13 @@ namespace Traits
         {
             var map = gameObject.GetComponentInParent<Map>();
             var thisSubject = gameObject.GetComponent<Subject>();
+            var thisPos = new Vector2Int(thisSubject.x, thisSubject.y);
             
-            var (deltaX, deltaY) = Subject.DirectionToVector(dir);
-            var (toX, toY) = (thisSubject.x + deltaX, thisSubject.y + deltaY);
+            var to = thisPos + Subject.DirectionToVector(dir);
 
-            if (!map.IsValidSpot(toX, toY)) return false;
+            if (!map.IsValidSpot(to)) return false;
 
-            var stack = map.stacks[toY][toX];
+            var stack = map.stacks[to.y][to.x];
             return stack.TrueForAll(subject =>
             {
                 return subject.GetComponents<Trait>().ToList().TrueForAll(trait => trait.CanEnter(thisSubject));
@@ -81,13 +81,12 @@ namespace Traits
         {
             Map map = gameObject.GetComponentInParent<Map>();
             Subject thisSubject = gameObject.GetComponent<Subject>();
+            var thisPos = new Vector2Int(thisSubject.x, thisSubject.y);
             
-            var (deltaX, deltaY) = Subject.DirectionToVector(dir);
-            int toX = thisSubject.x + deltaX;
-            int toY = thisSubject.y + deltaY;
+            var to = thisPos + Subject.DirectionToVector(dir);
 
             List<Subject> oldStack = map.stacks[thisSubject.y][thisSubject.x];
-            List<Subject> newStack = map.stacks[toY][toX];
+            List<Subject> newStack = map.stacks[to.y][to.x];
             thisSubject.z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
 
             oldStack.Remove(thisSubject);
@@ -117,7 +116,7 @@ namespace Traits
             }
             afterSubjectLoop: ;
 
-            thisSubject.TransitionPosition((toX, toY));
+            thisSubject.Move(to);
             map.UpdateRules();
         }
     }

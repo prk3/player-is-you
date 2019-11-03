@@ -3,14 +3,18 @@ using UnityEngine;
 
 public class Alphabet
 {
-    private static Texture2D Texture;
+    /**
+     * Holds alphabet texture. Will be initialized in GetTexture.
+     */
+    private static Texture2D _texture;
     
-    // array mapping ascii codes to character positions and widths
-    // first 32 characters are skipped (control codes should not be shown anyways)
-    // character not defined if value = 0
-    // first 11 bits store x offset (0 - 2047)
-    // remaining 5 bits store character width - 1 (1-32)
-
+    /**
+     * Array mapping ascii codes to character positions and widths.
+     * First 32 characters are skipped (control codes should not be shown anyways).
+     * Character is not defined if value = 0.
+     * First 11 bits store x offset (0 - 2047).
+     * Remaining 5 bits store character width - 1 (1-32)
+     */
     private static readonly ushort[] PositionsAndWidths =
     {
         0, // SPACE
@@ -111,15 +115,22 @@ public class Alphabet
         0, // DEL
     };
     
+    /*
+     * Returns alphabet texture.
+     */
     public static Texture2D GetTexture()
     {
-        if (Texture != null) return Texture;
-        Texture = Resources.Load<Texture2D>("Textures/alphabet");
-        Texture.filterMode = FilterMode.Point;
+        if (_texture != null) return _texture;
+        _texture = Resources.Load<Texture2D>("Textures/alphabet");
+        _texture.filterMode = FilterMode.Point;
 
-        return Texture;
+        return _texture;
     }
 
+    /**
+     * Returns position of given character in alphabet texture.
+     * Null is returned when character doesn't exist in the texture.
+     */
     public static Tuple<int, int> PositionAndWidthOf(char c)
     {
         if (c < 32 || c > 127) return null;

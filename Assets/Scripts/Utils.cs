@@ -1,23 +1,27 @@
-
-using System;
 using UnityEngine;
 
 public class Utils
 {
-    public static (int, int) GetScreenSizePx()
+    /**
+     * Returns screen size in pixels.
+     */
+    public static Vector2Int GetScreenSizePx()
     {
-        return (Screen.width, Screen.height);
+        return new Vector2Int(Screen.width, Screen.height);
     }
 
-    public static (float, float) GetScreenSize()
+    /**
+     * Returns screen size in unity units.
+     */
+    public static Vector2 GetScreenSize()
     {
         float halfScreenHeight = Camera.main.orthographicSize;
 
-        var (widthPx, heightPx) = GetScreenSizePx();
+        var screenSizePx = GetScreenSizePx();
     
         var screenHeight = 2 * halfScreenHeight;
-        var screenWidth = ((float)widthPx / heightPx) * screenHeight;
+        var screenWidth = ((float)screenSizePx.x / screenSizePx.y) * screenHeight;
 
-        return (screenWidth, screenHeight);
+        return new Vector2(screenWidth, screenHeight);
     }
 }

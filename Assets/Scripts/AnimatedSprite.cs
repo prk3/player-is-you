@@ -7,7 +7,7 @@ public class AnimatedSprite : MonoBehaviour
 
     private float _time;
     private int _currentSpriteIndex;
-    private Sprite[] _spritesUntouched;
+    private Sprite[] _spritesModed;
     private Sprite[] _sprites;
 
     public void Start()
@@ -17,10 +17,10 @@ public class AnimatedSprite : MonoBehaviour
         var sprite = ren.sprite;
         var oldRect = sprite.textureRect;
 
-        _spritesUntouched = new Sprite[numberOfSprites];
+        _sprites = new Sprite[numberOfSprites];
         for (int i = 0; i < numberOfSprites; i++)
         {
-            _spritesUntouched[i] = Sprite.Create(
+            _sprites[i] = Sprite.Create(
                 sprite.texture,
                 new Rect(oldRect.x, oldRect.height * i, oldRect.width, oldRect.height),
                 sprite.pivot,
@@ -28,7 +28,11 @@ public class AnimatedSprite : MonoBehaviour
             );
         }
 
-        _sprites = _spritesUntouched;
+        _spritesModed = new Sprite[_sprites.Length];
+        for (int i = 0; i < _spritesModed.Length; i++)
+        {
+            _spritesModed[i] = _sprites[i];
+        }
     }
 
     public void Update()
@@ -45,29 +49,29 @@ public class AnimatedSprite : MonoBehaviour
     private void NextSprite()
     {
         _currentSpriteIndex = _currentSpriteIndex >= numberOfSprites - 1 ? 0 : _currentSpriteIndex + 1;
-        gameObject.GetComponent<SpriteRenderer>().sprite = _sprites[_currentSpriteIndex];
+        gameObject.GetComponent<SpriteRenderer>().sprite = _spritesModed[_currentSpriteIndex];
     }
 
     public void Mod(Texture2D mod, Vector2Int modPosition)
     {
-        Vector2Int size = new Vector2Int(_spritesUntouched[0].texture.width, _spritesUntouched[0].texture.height);
-        
-        for (int i = 0; i < _spritesUntouched.Length; i++)
+        Vector2Int size = new Vector2Int((int)_sprites[0].textureRect.width, (int)_sprites[0].textureRect.height);
+
+        for (int i = 0; i < _spritesModed.Length; i++)
         {
             var newTexture = TileMod.MakeModdedTexture(
-                _spritesUntouched[i].texture,
-                new Vector2Int((int) _spritesUntouched[i].textureRect.x, (int) _spritesUntouched[i].textureRect.y),
+                _sprites[i].texture,
+                new Vector2Int((int) _sprites[i].textureRect.x, (int) _sprites[i].textureRect.y),
                 mod,
                 modPosition,
                 size);
 
-            newTexture.filterMode = _spritesUntouched[i].texture.filterMode;
+            newTexture.filterMode = _sprites[i].texture.filterMode;
             
-            _sprites[i] = Sprite.Create(
+            _spritesModed[i] = Sprite.Create(
                 newTexture,
                 new Rect(0, 0, size.x, size.y),
-                _spritesUntouched[0].pivot,
-                _spritesUntouched[0].pixelsPerUnit);
+                _sprites[0].pivot,
+                _sprites[0].pixelsPerUnit);
         }
     }
 }

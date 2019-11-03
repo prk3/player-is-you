@@ -15,39 +15,39 @@ public class ObjectFitContain : MonoBehaviour
 
     public bool Contain(float itemWidth, float itemHeight)
     {
-        var (screenWidthPx, screenHeightPx) = Utils.GetScreenSizePx();
+        var screenSizePx = Utils.GetScreenSizePx();
 
         if (
-            screenWidthPx == _prevScreenWidth &&
-            screenHeightPx == _prevScreenHeight &&
+            screenSizePx.x == _prevScreenWidth &&
+            screenSizePx.y == _prevScreenHeight &&
             itemWidth == _prevItemWidth &&
             itemHeight == _prevItemHeight)
         {
             return false;
         }
 
-        var (screenWidth, screenHeight) = Utils.GetScreenSize();
+        var screenSize = Utils.GetScreenSize();
     
-        var screenRatio = screenWidth / screenHeight;
+        var screenRatio = screenSize.x / screenSize.y;
         var itemRatio = itemWidth / itemHeight;
 
         // if screen is "wider" than map (unused space on left and right)
         if (screenRatio > itemRatio)
         {
-            var scale = screenHeight / itemHeight;
+            var scale = screenSize.y / itemHeight;
             gameObject.transform.localScale = new Vector3(scale, scale, 1);
             gameObject.transform.localPosition = new Vector3((-itemWidth / 2) *scale, (-itemHeight/2) * scale, 0);
         }
         // if screen is "narrower" than map (unused space on top and bottom)
         else
         {
-            var scale = screenWidth / itemWidth;
+            var scale = screenSize.x / itemWidth;
             gameObject.transform.localScale = new Vector3(scale, scale, 1);
             gameObject.transform.localPosition = new Vector3((-itemWidth / 2) * scale, (-itemHeight/2) * scale, 0);
         }
 
-        _prevScreenWidth = screenWidthPx;
-        _prevScreenHeight = screenHeightPx;
+        _prevScreenWidth = screenSizePx.x;
+        _prevScreenHeight = screenSizePx.y;
 
         _prevItemWidth = itemWidth;
         _prevItemHeight = itemHeight;

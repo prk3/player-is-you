@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Subjects;
+using UnityEngine;
 
 namespace Traits
 {
@@ -14,16 +15,15 @@ namespace Traits
         public override bool CanEnter(Subject entering)
         {
             Subject thisSubject = gameObject.GetComponent<Subject>();
-            int deltaX = thisSubject.x - entering.x;
-            int deltaY = thisSubject.y - entering.y;
-
-            int nextX = thisSubject.x + deltaX;
-            int nextY = thisSubject.y + deltaY;
+            var thisPos = new Vector2Int(thisSubject.x, thisSubject.y);
+            var enteringPos = new Vector2Int(entering.x, entering.y);
+            var to = thisPos + (thisPos - enteringPos);
+            
             Map map = gameObject.GetComponentInParent<Map>();
 
-            if (!map.IsValidSpot(nextX, nextY)) return false;
+            if (!map.IsValidSpot(to)) return false;
             
-            List<Subject> stackToPush = map.stacks[nextY][nextX];
+            List<Subject> stackToPush = map.stacks[to.y][to.x];
             return stackToPush.TrueForAll(subject =>
                 {
                     return subject.GetComponents<Trait>().ToList().TrueForAll(trait => trait.CanEnter(thisSubject));
@@ -34,15 +34,13 @@ namespace Traits
         public override OnEnterOutcome OnEnter(Subject entering)
         {
             Subject thisSubject = gameObject.GetComponent<Subject>();
-            int deltaX = thisSubject.x - entering.x;
-            int deltaY = thisSubject.y - entering.y;
+            var thisPos = new Vector2Int(thisSubject.x, thisSubject.y);
+            var enteringPos = new Vector2Int(entering.x, entering.y);
+            var to = thisPos + (thisPos - enteringPos);
 
-            int toX = thisSubject.x + deltaX;
-            int toY = thisSubject.y + deltaY;
             Map map = gameObject.GetComponentInParent<Map>();
-
             List<Subject> oldStack = map.stacks[thisSubject.y][thisSubject.x];
-            List<Subject> newStack = map.stacks[toY][toX];
+            List<Subject> newStack = map.stacks[to.y][to.x];
             thisSubject.z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
 
             oldStack.Remove(thisSubject);
@@ -71,7 +69,7 @@ namespace Traits
                 }
             }
 
-            thisSubject.TransitionPosition((toX, toY));
+            thisSubject.Move(to);
 
             return OnEnterOutcome.Break;
         }

@@ -53,7 +53,7 @@ namespace Subjects
 
     public class Subject : MonoBehaviour
     {
-        // will be initialized in Start
+        // will be initialized in Awake
         private static Texture2D _texture;
     
         private static readonly Dictionary<SubjectType, SubjectType> SubjectToEntityMap = new Dictionary<SubjectType,SubjectType>
@@ -78,8 +78,52 @@ namespace Subjects
             { SubjectType.TraitFloat, typeof(Traits.Float) }
         };
 
-        // will be initialized in Start
+        // will be initialized in Awake
         private static Dictionary<SubjectType, Texture2D> _subjectTypeToModTilemap;
+        
+        public static Texture2D GetTexture()
+        {
+            return _texture;
+        }
+
+        public static Texture2D GetModTilemap(SubjectType type)
+        {
+            _subjectTypeToModTilemap.TryGetValue(type, out var output);
+            return output;
+        }
+        
+        public static Vector2Int DirectionToVector(MoveDirection dir)
+        {
+            switch (dir)
+            {
+                // remember than our map has y growing downwards
+                case MoveDirection.Up:     return Vector2Int.down;
+                case MoveDirection.Down:   return Vector2Int.up;
+                case MoveDirection.Left:   return Vector2Int.left;
+                case MoveDirection.Right:  return Vector2Int.right;
+                default:                   return Vector2Int.zero;
+            }
+        }
+        
+        public static bool IsSubject(SubjectType t)
+        {
+            return SubjectToEntityMap.ContainsKey(t);
+        }
+
+        public static SubjectType GetSubjectType(SubjectType t)
+        {
+            return SubjectToEntityMap[t];
+        }
+
+        public static bool IsTrait(SubjectType t)
+        {
+            return TraitToBehaviorMap.ContainsKey(t);
+        }
+    
+        public static Type GetTraitBehavior(SubjectType t)
+        {
+            return TraitToBehaviorMap[t];
+        }
     
         private SubjectType _type;
         private int _y;
@@ -92,6 +136,51 @@ namespace Subjects
         private float _moveTime;
         private float _moveDuration;
 
+        void Awake()
+        {
+            if (_texture == null)
+            {
+                _texture = Resources.Load<Texture2D>("Textures/subjects");
+                _texture.filterMode = FilterMode.Point;
+            }
+            
+            if (_subjectTypeToModTilemap == null)
+            {
+                _subjectTypeToModTilemap = new Dictionary<SubjectType, Texture2D>()
+                {
+                    { SubjectType.Water, Resources.Load<Texture2D>("Textures/water_mod") },
+                    { SubjectType.Wall,  Resources.Load<Texture2D>("Textures/wall_mod") }
+                };
+            }
+        }
+        
+        void Start()
+        {
+            gameObject.transform.localPosition = new Vector3(x, -y - 1, 0);
+        }
+    
+        void Update()
+        {
+            if (_moving)
+            {
+                _moveTime += Time.deltaTime;
+                if (_moveTime > _moveDuration)
+                {
+                    _moving = false;
+                    x = (int)_moveTo.x;
+                    y = (int)_moveTo.y;
+                }
+                else
+                {
+                    // ease-in based on y-flipped parabola
+                    float PositionFunc(float x) => x * (2 - x);
+
+                    var tmpPos = _moveFrom + ((_moveTo - _moveFrom) * (PositionFunc(_moveTime / _moveDuration)));
+                    gameObject.transform.localPosition = new Vector3(tmpPos.x, -tmpPos.y - 1, 0);
+                }
+            }
+        }
+        
         public int x
         {
             get { return _x; }
@@ -135,104 +224,19 @@ namespace Subjects
         {
             _type = type;
         }
-
-        public static Texture2D GetTexture()
-        {
-            if (_texture == null)
-            {
-                _texture = Resources.Load<Texture2D>("Textures/entities");
-                _texture.filterMode = FilterMode.Point;
-            }
-
-            return _texture;
-        }
-
-        public static Texture2D GetModTilemap(SubjectType type)
-        {
-            if (_subjectTypeToModTilemap == null)
-            {
-                _subjectTypeToModTilemap = new Dictionary<SubjectType, Texture2D>()
-                {
-                    { SubjectType.Water, Resources.Load<Texture2D>("Textures/water_mod") },
-                    //{ SubjectType.Wall, Resources.Load<Texture2D>("Textures/water_mod") },
-                };
-            }
-
-            _subjectTypeToModTilemap.TryGetValue(type, out var output);
-            return output;
-        }
-
-        public static (int, int) DirectionToVector(MoveDirection dir)
-        {
-            switch (dir)
-            {
-                case MoveDirection.Up:    return ( 0, -1);
-                case MoveDirection.Down:  return ( 0,  1);
-                case MoveDirection.Left:  return (-1,  0);
-                case MoveDirection.Right: return ( 1,  0);
-                default:                  return ( 0,  0);
-            }
-        }
-
-        public bool IsMoving()
-        {
-            return _moving;
-        }
-
-        public static bool IsSubject(SubjectType t)
-        {
-            return SubjectToEntityMap.ContainsKey(t);
-        }
-
-        public static SubjectType GetSubjectType(SubjectType t)
-        {
-            return SubjectToEntityMap[t];
-        }
-
-        public static bool IsTrait(SubjectType t)
-        {
-            return TraitToBehaviorMap.ContainsKey(t);
-        }
-    
-        public static Type GetTraitBehavior(SubjectType t)
-        {
-            return TraitToBehaviorMap[t];
-        }
-    
-        void Start()
-        {
-            gameObject.transform.localPosition = new Vector3(x, -y - 1, 0);
-        }
-    
-        void Update()
-        {
-            if (_moving)
-            {
-                _moveTime += Time.deltaTime;
-                if (_moveTime > _moveDuration)
-                {
-                    _moving = false;
-                    x = (int)_moveTo.x;
-                    y = (int)_moveTo.y;
-                }
-                else
-                {
-                    // ease-in based on y-flipped parabola
-                    float PositionFunc(float x) => x * (2 - x);
-
-                    var tmpPos = _moveFrom + ((_moveTo - _moveFrom) * (PositionFunc(_moveTime / _moveDuration)));
-                    gameObject.transform.localPosition = new Vector3(tmpPos.x, -tmpPos.y - 1, 0);
-                }
-            }
-        }
-
-        public void TransitionPosition((int, int) newPosition, float time = 0.18f)
+        
+        public void Move(Vector2Int newPosition, float time = 0.18f)
         {
             _moveFrom = new Vector2(x, y);
-            _moveTo = new Vector2(newPosition.Item1, newPosition.Item2);
+            _moveTo = newPosition;
             _moveDuration = time;
             _moveTime = 0;
             _moving = true;
+        }
+        
+        public bool IsMoving()
+        {
+            return _moving;
         }
     }
 }
