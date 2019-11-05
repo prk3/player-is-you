@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Traits;
 using UnityEngine;
 
 namespace Subjects
@@ -135,7 +136,7 @@ namespace Subjects
         private Vector2 _moveTo;
         private float _moveTime;
         private float _moveDuration;
-
+        
         void Awake()
         {
             if (_texture == null)
@@ -225,7 +226,7 @@ namespace Subjects
             _type = type;
         }
         
-        public void Move(Vector2Int newPosition, float time = 0.18f)
+        public void AnimateMove(Vector2Int newPosition, float time = 0.18f)
         {
             _moveFrom = new Vector2(x, y);
             _moveTo = newPosition;
@@ -234,9 +235,105 @@ namespace Subjects
             _moving = true;
         }
         
-        public bool IsMoving()
+        public bool CanMove()
         {
-            return _moving;
+            return !_moving;
+        }
+
+        public bool CanMoveTo(MoveDirection dir)
+        {
+            Map map = gameObject.GetComponentInParent<Map>();
+            var thisPos = new Vector2Int(x, y);
+            var to = thisPos + DirectionToVector(dir);
+            
+            if (!map.IsValidSpot(to)) return false;
+            List<Subject> newStack = map.stacks[to.y][to.x];
+            
+            return newStack.TrueForAll(
+                subject => subject.GetComponents<Trait>().ToList().TrueForAll(
+                    trait => trait.CanEnter(this, dir)));
+        }
+
+        public void MoveTo(MoveDirection dir, Action<Subject> registerMove)
+        {
+            Map map = gameObject.GetComponentInParent<Map>();
+            var thisPos = new Vector2Int(x, y);
+            var to = thisPos + DirectionToVector(dir);
+
+            List<Subject> oldStack = map.stacks[y][x];
+            List<Subject> newStack = map.stacks[to.y][to.x];
+            z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
+
+            oldStack.Remove(this);
+            int newStackPosition = 0;
+            newStack.Insert(newStackPosition, this);
+            registerMove(this);
+
+            for (int i = 1; i < newStack.Count; i++)
+            {
+                var subject = newStack[i];
+                foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
+                {
+                    var outcome = trait.OnEnter(this, dir, registerMove);
+                    switch (outcome)
+                    {
+                        case OnEnterOutcome.PullDown:
+                            newStack.RemoveAt(newStackPosition);
+                            newStackPosition = i;
+                            newStack.Insert(newStackPosition, this);
+                            break;
+                        case OnEnterOutcome.Break:
+                            goto afterSubjectLoop;
+                        case OnEnterOutcome.Continue:
+                            break;
+                    }
+                }
+                afterTraitLoop: ;
+            }
+            afterSubjectLoop: ;
+
+            AnimateMove(to);
+            map.UpdateRules();
+        }
+
+        public void AfterMove()
+        {
+            Map map = gameObject.GetComponentInParent<Map>();
+
+            List<Subject> stack = map.stacks[y][x];
+
+            int pos = stack.FindIndex(subject => subject == this);
+
+            if (pos >= 0)
+            {
+                for (int i = pos + 1; i < stack.Count; i++)
+                {
+                    var subject = stack[i];
+                    foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
+                    {
+                        var outcome = trait.AfterEnter();
+                        switch (outcome)
+                        {
+                            case AfterEnterOutcome.Break:
+                                goto afterSubjectLoop;
+                            case AfterEnterOutcome.Continue:
+                                break;
+                        }
+                    }
+                    afterTraitLoop: ;
+                }
+                afterSubjectLoop: ;
+            }
+        }
+
+        public void Refresh()
+        {
+            var modComp = gameObject.GetComponent<TileMod>();
+            if (modComp)
+            {
+                var map = gameObject.GetComponentInParent<Map>();
+                modComp.ApplyMod(map.CollectNeighborsByte(this, true));
+            }
         }
     }
 }

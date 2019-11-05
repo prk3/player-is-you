@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Subjects;
 using UnityEngine;
 
@@ -8,6 +7,9 @@ namespace Traits
     public class You : Trait
     {
         private Subject _subject;
+        private Vector2Int _startingPosition;
+        private Stack<Subject> _movedSubjects;
+        private Stack<Subject> _movingSubjects;
 
         public override int GetInteractionOrder()
         {
@@ -22,7 +24,9 @@ namespace Traits
         // Update is called once per frame
         void Update()
         {
-            if (!_subject.IsMoving())
+            CheckMoveEnd();
+            
+            if (_subject.CanMove())
             {
                 int up = Input.GetKey(KeyCode.UpArrow) ? 1 : 0;
                 int down = Input.GetKey(KeyCode.DownArrow) ? 1 : 0;
@@ -54,70 +58,49 @@ namespace Traits
 
         private void TryMove(MoveDirection dir)
         {
-            if (CanMoveTo(dir))
-            {
-                Move(dir);
-            }
-        }
-
-        private bool CanMoveTo(MoveDirection dir)
-        {
-            var map = gameObject.GetComponentInParent<Map>();
             var thisSubject = gameObject.GetComponent<Subject>();
-            var thisPos = new Vector2Int(thisSubject.x, thisSubject.y);
-            
-            var to = thisPos + Subject.DirectionToVector(dir);
-
-            if (!map.IsValidSpot(to)) return false;
-
-            var stack = map.stacks[to.y][to.x];
-            return stack.TrueForAll(subject =>
+            if (thisSubject.CanMoveTo(dir))
             {
-                return subject.GetComponents<Trait>().ToList().TrueForAll(trait => trait.CanEnter(thisSubject));
-            });
+                _startingPosition = new Vector2Int(thisSubject.x, thisSubject.y);
+                _movedSubjects = new Stack<Subject>();
+                _movingSubjects = new Stack<Subject>();
+
+                void RegisterMove(Subject s)
+                {
+                    _movedSubjects.Push(s);
+                    _movingSubjects.Push(s);
+                }
+                
+                thisSubject.MoveTo(dir, RegisterMove);
+            }
         }
 
-        private void Move(MoveDirection dir)
+        private void CheckMoveEnd()
         {
-            Map map = gameObject.GetComponentInParent<Map>();
-            Subject thisSubject = gameObject.GetComponent<Subject>();
-            var thisPos = new Vector2Int(thisSubject.x, thisSubject.y);
+            if (_movedSubjects == null) return;
             
-            var to = thisPos + Subject.DirectionToVector(dir);
-
-            List<Subject> oldStack = map.stacks[thisSubject.y][thisSubject.x];
-            List<Subject> newStack = map.stacks[to.y][to.x];
-            thisSubject.z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
-
-            oldStack.Remove(thisSubject);
-            int newStackPosition = 0;
-            newStack.Insert(newStackPosition, thisSubject);
-
-            for (int i = 1; i < newStack.Count; i++)
+            while (_movingSubjects.Count > 0 && _movingSubjects.Peek().CanMove())
             {
-                var subject = newStack[1];
-                foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
-                {
-                    var outcome = trait.OnEnter(thisSubject);
-                    switch (outcome)
-                    {
-                        case OnEnterOutcome.PullDown:
-                            newStack.RemoveAt(newStackPosition);
-                            newStackPosition = i;
-                            newStack.Insert(newStackPosition, thisSubject);
-                            break;
-                        case OnEnterOutcome.Break:
-                            goto afterSubjectLoop;
-                        case OnEnterOutcome.Continue:
-                            break;
-                    }
-                }
-                afterTraitLoop: ;
+                _movingSubjects.Pop();
             }
-            afterSubjectLoop: ;
 
-            thisSubject.Move(to);
+            if (_movingSubjects.Count != 0) return;
+
+            var positions = new List<Vector2Int>(_movedSubjects.Count + 1) {_startingPosition};
+
+            while (_movedSubjects.Count > 0)
+            {
+                _subject = _movedSubjects.Pop();
+                positions.Add(new Vector2Int(_subject.x, _subject.y));
+                _subject.AfterMove();
+            }
+
+            var map = gameObject.GetComponentInParent<Map>();
+            map.RefreshPositions(positions);
             map.UpdateRules();
+
+            _movedSubjects = null;
+            _movingSubjects = null;
         }
     }
 }

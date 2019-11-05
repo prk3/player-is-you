@@ -1,3 +1,4 @@
+using System;
 using Subjects;
 
 namespace Traits
@@ -9,12 +10,12 @@ namespace Traits
             return 700;
         }
 
-        public override bool CanEnter(Subject entering)
+        public override bool CanEnter(Subject entering, MoveDirection dir)
         {
             return true;
         }
 
-        public override OnEnterOutcome OnEnter(Subject entering)
+        public override OnEnterOutcome OnEnter(Subject entering, MoveDirection dir, Action<Subject> registerMove)
         {
             return OnEnterOutcome.PullDown;
         }

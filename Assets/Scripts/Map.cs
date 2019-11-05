@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using Subjects;
 using UnityEngine;
 
@@ -257,6 +256,39 @@ public class Map : MonoBehaviour
                         entity.gameObject.AddComponent<Traits.Push>();
                     }
                 }
+            }
+        }
+    }
+
+    public void RefreshPositions(List<Vector2Int> positions)
+    {
+        var affectedTiles = new HashSet<(int, int)>();
+
+        void TryAddPosition(Vector2Int pos)
+        {
+            if (IsValidSpot(pos)) affectedTiles.Add((pos.x, pos.y));
+        }
+
+        foreach (var position in positions)
+        {
+            TryAddPosition(position + Vector2Int.left   + Vector2Int.down);
+            TryAddPosition(position                     + Vector2Int.down);
+            TryAddPosition(position + Vector2Int.right  + Vector2Int.down);
+            
+            TryAddPosition(position + Vector2Int.left);
+            TryAddPosition(position);
+            TryAddPosition(position + Vector2Int.right);
+            
+            TryAddPosition(position + Vector2Int.left   + Vector2Int.up);
+            TryAddPosition(position                     + Vector2Int.up);
+            TryAddPosition(position + Vector2Int.right  + Vector2Int.up);
+        }
+
+        foreach (var (x, y) in affectedTiles)
+        {
+            foreach (var subject in stacks[y][x])
+            {
+                subject.Refresh();
             }
         }
     }

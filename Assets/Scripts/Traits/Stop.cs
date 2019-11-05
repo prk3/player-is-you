@@ -1,5 +1,4 @@
 using Subjects;
-using UnityEngine;
 
 namespace Traits
 {
@@ -10,7 +9,7 @@ namespace Traits
             return 600;
         }
 
-        public override bool CanEnter(Subject initiator)
+        public override bool CanEnter(Subject initiator, MoveDirection dir)
         {
             return false;
         }

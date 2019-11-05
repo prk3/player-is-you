@@ -1,3 +1,4 @@
+using System;
 using Subjects;
 using UnityEngine;
 
@@ -10,8 +11,8 @@ public enum OnEnterOutcome
 
 public enum AfterEnterOutcome
 {
-    InteractionContinue,
-    InteractionStop,
+    Break,
+    Continue,
 }
 
 namespace Traits
@@ -21,19 +22,19 @@ namespace Traits
 
         public abstract int GetInteractionOrder();
         
-        public virtual bool CanEnter(Subject entering)
+        public virtual bool CanEnter(Subject entering, MoveDirection dir)
         {
             return true;
         }
 
-        public virtual OnEnterOutcome OnEnter(Subject entering)
+        public virtual OnEnterOutcome OnEnter(Subject entering, MoveDirection dir, Action<Subject> registerMove)
         {
             return OnEnterOutcome.Continue;
         }
 
-        public virtual AfterEnterOutcome AfterEnter(Subject entering)
+        public virtual AfterEnterOutcome AfterEnter()
         {
-            return AfterEnterOutcome.InteractionContinue;
+            return AfterEnterOutcome.Continue;
         }
     }
 }
