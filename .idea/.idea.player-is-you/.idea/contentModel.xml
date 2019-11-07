@@ -21,7 +21,7 @@
           <e p="StateTransition.cs" t="Include" />
           <e p="States" t="Include">
             <e p="Gameplay.cs" t="Include" />
-            <e p="MainMenu.cs" t="Include" />
+            <e p="StartMenu.cs" t="Include" />
           </e>
           <e p="Subjects" t="Include">
             <e p="Subject.cs" t="Include" />

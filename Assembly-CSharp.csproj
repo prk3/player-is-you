@@ -66,7 +66,7 @@
     <Compile Include="Assets\Scripts\Menu.cs" />
     <Compile Include="Assets\Scripts\ObjectFitContain.cs" />
     <Compile Include="Assets\Scripts\States\Gameplay.cs" />
-    <Compile Include="Assets\Scripts\States\MainMenu.cs" />
+    <Compile Include="Assets\Scripts\States\StartMenu.cs" />
     <Compile Include="Assets\Scripts\StateTransition.cs" />
     <Compile Include="Assets\Scripts\Subjects\Subject.cs" />
     <Compile Include="Assets\Scripts\TileMod.cs" />

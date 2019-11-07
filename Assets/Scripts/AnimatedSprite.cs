@@ -12,7 +12,7 @@ public class AnimatedSprite : MonoBehaviour
 
     public void Start()
     {
-        _time = Time.time;
+        _time = 0;
         var ren = gameObject.GetComponent<SpriteRenderer>();
         var sprite = ren.sprite;
         var oldRect = sprite.textureRect;

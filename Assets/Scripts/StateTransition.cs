@@ -5,19 +5,25 @@ using UnityEngine.SceneManagement;
 public class StateTransition : MonoBehaviour
 {
     private GameObject _circle;
+    private bool _stateActive;
     
     private float _time;
     private const float TransitionDuration = 0.7f;
-
     private bool _fadingIn = true;
     private bool _fadingOut;
     private string _targetScene;
-    
+
     public void TransitionTo(string sceneName)
     {
         _time = 0;
         _fadingOut = true;
         _targetScene = sceneName;
+        _stateActive = false;
+    }
+
+    public bool IsStateActive()
+    {
+        return _stateActive;
     }
 
     void Start()
@@ -51,6 +57,7 @@ public class StateTransition : MonoBehaviour
             {
                 _circle.transform.localScale = new Vector3(0, 0, 0);
                 _fadingIn = false;
+                _stateActive = true;
             }
         }
 

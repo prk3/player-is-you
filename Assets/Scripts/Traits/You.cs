@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using States;
 using Subjects;
 using UnityEngine;
 
@@ -9,6 +10,8 @@ namespace Traits
         private Subject _subject;
         private List<Subject> _movedSubjects;
         private Stack<Subject> _movingSubjects;
+        private StateTransition _stateTransition;
+        private Gameplay _gameplay;
 
         public override int GetInteractionOrder()
         {
@@ -17,6 +20,8 @@ namespace Traits
 
         void Start()
         {
+            _stateTransition = gameObject.GetComponentInParent<StateTransition>();
+            _gameplay = gameObject.GetComponentInParent<Gameplay>();
             _subject = gameObject.GetComponent<Subject>();
         }
 
@@ -25,7 +30,7 @@ namespace Traits
         {
             CheckMoveEnd();
             
-            if (!_subject.IsMoving())
+            if (!_subject.IsMoving() && (!_gameplay || _gameplay.IsPlaying()) && (!_stateTransition || _stateTransition.IsStateActive()))
             {
                 int up = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) ? 1 : 0;
                 int down = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) ? 1 : 0;

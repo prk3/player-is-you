@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace States
 {
-    public class MainMenu : MonoBehaviour
+    public class StartMenu : MonoBehaviour
     {
         void Start()
         {
@@ -12,7 +12,7 @@ namespace States
             obj.transform.parent = gameObject.transform;
 
             var menu = obj.AddComponent<Menu>();
-            menu.AddItem("Play", () => transition.TransitionTo("GameplayScene"));
+            menu.AddItem("Play", () => transition.TransitionTo("Gameplay"));
             menu.AddItem("Quit", () => Application.Quit());
         }
     }
