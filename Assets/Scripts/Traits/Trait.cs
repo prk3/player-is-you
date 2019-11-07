@@ -32,7 +32,12 @@ namespace Traits
             return OnEnterOutcome.Continue;
         }
 
-        public virtual AfterEnterOutcome AfterEnter()
+        public virtual AfterEnterOutcome AfterEnterEarly()
+        {
+            return AfterEnterOutcome.Continue;
+        }
+
+        public virtual AfterEnterOutcome AfterEnterLate()
         {
             return AfterEnterOutcome.Continue;
         }

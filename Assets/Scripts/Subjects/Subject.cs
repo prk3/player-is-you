@@ -127,8 +127,8 @@ namespace Subjects
         }
     
         private SubjectType _type;
-        private int _y;
-        private int _x;
+        public int x;
+        public int y;
         private int _z;
 
         private bool _moving;
@@ -168,8 +168,6 @@ namespace Subjects
                 if (_moveTime > _moveDuration)
                 {
                     _moving = false;
-                    x = (int)_moveTo.x;
-                    y = (int)_moveTo.y;
                 }
                 else
                 {
@@ -182,26 +180,6 @@ namespace Subjects
             }
         }
         
-        public int x
-        {
-            get { return _x; }
-            set
-            {
-                _x = value;
-                gameObject.transform.localPosition = new Vector3(value, -_y - 1, 0);
-            }
-        }
-    
-        public int y
-        {
-            get { return _y; }
-            set
-            {
-                _y = value;
-                gameObject.transform.localPosition = new Vector3(_x, -value - 1, 0);
-            }
-        }
-
         public int z
         {
             get { return _z; }
@@ -226,18 +204,18 @@ namespace Subjects
             _type = type;
         }
         
-        public void AnimateMove(Vector2Int newPosition, float time = 0.18f)
+        public void AnimateMove(Vector2Int from, Vector2Int to, float time = 0.18f)
         {
-            _moveFrom = new Vector2(x, y);
-            _moveTo = newPosition;
+            _moveFrom = from;
+            _moveTo = to;
             _moveDuration = time;
             _moveTime = 0;
             _moving = true;
         }
         
-        public bool CanMove()
+        public bool IsMoving()
         {
-            return !_moving;
+            return _moving;
         }
 
         public bool CanMoveTo(MoveDirection dir)
@@ -292,11 +270,13 @@ namespace Subjects
             }
             afterSubjectLoop: ;
 
-            AnimateMove(to);
+            x = to.x;
+            y = to.y;
+            AnimateMove(thisPos, to);
             map.UpdateRules();
         }
 
-        public void AfterMove()
+        public void AfterMoveEarly()
         {
             Map map = gameObject.GetComponentInParent<Map>();
 
@@ -311,7 +291,37 @@ namespace Subjects
                     var subject = stack[i];
                     foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
                     {
-                        var outcome = trait.AfterEnter();
+                        var outcome = trait.AfterEnterEarly();
+                        switch (outcome)
+                        {
+                            case AfterEnterOutcome.Break:
+                                goto afterSubjectLoop;
+                            case AfterEnterOutcome.Continue:
+                                break;
+                        }
+                    }
+                    afterTraitLoop: ;
+                }
+                afterSubjectLoop: ;
+            }
+        }
+        
+        public void AfterMoveLate()
+        {
+            Map map = gameObject.GetComponentInParent<Map>();
+
+            List<Subject> stack = map.stacks[y][x];
+
+            int pos = stack.FindIndex(subject => subject == this);
+
+            if (pos >= 0)
+            {
+                for (int i = pos + 1; i < stack.Count; i++)
+                {
+                    var subject = stack[i];
+                    foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
+                    {
+                        var outcome = trait.AfterEnterLate();
                         switch (outcome)
                         {
                             case AfterEnterOutcome.Break:

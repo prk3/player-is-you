@@ -143,8 +143,8 @@ public class TileMod : MonoBehaviour
         (7 << 4) + 2, // 119
         (0 << 4) + 2, // 120
         (0 << 4) + 2, // 121
-        (1 << 5) + 2, // 122
-        (2 << 5) + 4, // 123
+        (1 << 4) + 2, // 122
+        (2 << 4) + 4, // 123
         (0 << 4) + 2, // 124
         (0 << 4) + 2, // 125
         (5 << 4) + 4, // 126
@@ -348,7 +348,7 @@ public class TileMod : MonoBehaviour
     {
         var subject = gameObject.GetComponent<Subject>();
         var map = gameObject.GetComponentInParent<Map>();
-        ApplyMod(map.CollectNeighborsByte(subject));
+        ApplyMod(map.CollectNeighborsByte(subject, true));
     }
     
     public void ApplyMod(byte neighbors)

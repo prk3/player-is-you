@@ -61,19 +61,19 @@ public class Menu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow))
+        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
         {
             _selectedItem -= 1;
             if (_selectedItem < 0) _selectedItem = _items.Count - 1;
             MoveArrow(_selectedItem);
         }
-        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
         {
             _selectedItem += 1;
             if (_selectedItem >= _items.Count) _selectedItem = 0;
             MoveArrow(_selectedItem);
         }
-        else if (Input.GetKeyDown(KeyCode.Return))
+        else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
         {
             var action = _items[_selectedItem].Item2;
             action();
