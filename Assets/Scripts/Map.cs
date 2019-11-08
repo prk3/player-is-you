@@ -27,6 +27,20 @@ public class Map : MonoBehaviour
         width = int.Parse(lines[0]);
         height = int.Parse(lines[1]);
 
+        var mapBackground = GameObject.CreatePrimitive(PrimitiveType.Plane);
+        mapBackground.name = "background";
+        mapBackground.transform.parent = gameObject.transform;
+        mapBackground.transform.localPosition = new Vector3(width / 2.0f, -height / 2.0f, 1);
+        
+        mapBackground.transform.localScale = new Vector3(width / 10.0f, 1, height / 10.0f);
+        
+        var rotation = mapBackground.transform.localRotation.eulerAngles;
+        rotation.x = -90;
+        mapBackground.transform.localRotation = Quaternion.Euler(rotation);
+        
+        mapBackground.GetComponent<MeshRenderer>().material.color = new Color(0.08f, 0.08f, 0.08f, 1f);
+        mapBackground.GetComponent<MeshRenderer>().material.shader = Shader.Find("UI/Default");
+
         stacks = new List<Subject>[height][];
         
         for (int y = 0; y < height; y++)
@@ -77,9 +91,8 @@ public class Map : MonoBehaviour
     
     private GameObject MakeTile(int x, int y, SubjectType type)
     {
-        var obj = new GameObject();
+        var obj = new GameObject("subject");
         obj.transform.parent = gameObject.transform;
-        
         
         var subject = obj.AddComponent<Subject>();
         subject.SetEntityType(type);
@@ -101,7 +114,7 @@ public class Map : MonoBehaviour
         if (mod != null)
         {
             var modComp = obj.AddComponent<TileMod>();
-            modComp.ModTilemap = mod;
+            modComp.modTilemap = mod;
         }
 
         return obj;

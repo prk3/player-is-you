@@ -26,7 +26,7 @@ public class AnimatedText : MonoBehaviour
             
             var (position, width) = Alphabet.PositionAndWidthOf(c) ?? Alphabet.PositionAndWidthOf('?');
             
-            var obj = new GameObject();
+            var obj = new GameObject("char");
             obj.gameObject.transform.parent = gameObject.transform;
             obj.gameObject.transform.localPosition = new Vector3(offset, -1, 0);
             

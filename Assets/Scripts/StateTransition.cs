@@ -28,7 +28,8 @@ public class StateTransition : MonoBehaviour
 
     void Start()
     {
-        _circle = new GameObject();
+        _circle = new GameObject("transition circle");
+        _circle.transform.parent = gameObject.transform;
         
         var texture = Resources.Load<Texture2D>("Textures/circle");
         texture.filterMode = FilterMode.Point;

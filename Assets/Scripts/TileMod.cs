@@ -10,7 +10,7 @@ public class TileMod : MonoBehaviour
      * [ 8 ]       [ 16]
      * [ 32] [ 64] [128]
      */
-    private static byte[] _modPositions =
+    private static readonly byte[] ModPositions =
     {
         (4 << 4) + 5, //   0
         (4 << 4) + 5, //   1
@@ -296,7 +296,7 @@ public class TileMod : MonoBehaviour
      */
     public static Vector2Int GetModPositionFromNeighbors(byte neighbors)
     {
-        byte el = _modPositions[neighbors];
+        byte el = ModPositions[neighbors];
 
         int y = el & 0b00001111;
         int x = el >> 4;
@@ -340,9 +340,9 @@ public class TileMod : MonoBehaviour
         return newTexture;
     }
 
-    public Texture2D ModTilemap;
-    public int ModWidth = 32;
-    public int ModHeight = 32;
+    public Texture2D modTilemap;
+    public int modWidth = 32;
+    public int modHeight = 32;
 
     void Start()
     {
@@ -358,12 +358,11 @@ public class TileMod : MonoBehaviour
         if (animatedSpriteComp)
         {
             animatedSpriteComp.Mod(
-                ModTilemap,
-                GetModPositionFromNeighbors(neighbors) * new Vector2Int(ModWidth, ModHeight));
+                modTilemap,
+                GetModPositionFromNeighbors(neighbors) * new Vector2Int(modWidth, modHeight));
             return;
         }
         
-        Debug.Assert(false, "fuck");
         // otherwise, just apply mod to SpriteRenderer
         var rendererComp = gameObject.GetComponent<SpriteRenderer>();
         if (rendererComp)
@@ -371,21 +370,21 @@ public class TileMod : MonoBehaviour
             Sprite s = rendererComp.sprite;
             
             // new texture should have the same size as old one
-            Debug.Assert((int)s.textureRect.width == ModWidth);
-            Debug.Assert((int)s.textureRect.height == ModHeight);
+            Debug.Assert((int)s.textureRect.width == modWidth);
+            Debug.Assert((int)s.textureRect.height == modHeight);
             
             Texture2D newTexture = MakeModdedTexture(
                 s.texture,
                 new Vector2Int((int) s.textureRect.x, (int) s.textureRect.y),
-                ModTilemap,
-                GetModPositionFromNeighbors(neighbors) * new Vector2Int(ModWidth, ModHeight),
-                new Vector2Int(ModWidth, ModHeight));
+                modTilemap,
+                GetModPositionFromNeighbors(neighbors) * new Vector2Int(modWidth, modHeight),
+                new Vector2Int(modWidth, modHeight));
 
             newTexture.filterMode = s.texture.filterMode;
 
             rendererComp.sprite = Sprite.Create(
                 newTexture,
-                new Rect(0, 0, ModWidth, ModHeight),
+                new Rect(0, 0, modWidth, modHeight),
                 s.pivot,
                 s.pixelsPerUnit);
         }

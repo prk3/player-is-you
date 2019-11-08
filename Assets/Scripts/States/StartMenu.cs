@@ -8,7 +8,7 @@ namespace States
         {
             var transition = gameObject.AddComponent<StateTransition>();
         
-            var obj = new GameObject();
+            var obj = new GameObject("menu");
             obj.transform.parent = gameObject.transform;
 
             var menu = obj.AddComponent<Menu>();

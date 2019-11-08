@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class Menu : MonoBehaviour
 {
+    private StateTransition _transition;
     private GameObject _arrow;
     private List<(string, Action)> _items = new List<(string, Action)>();
     private List<float> _widths = new List<float>();
@@ -17,6 +18,8 @@ public class Menu : MonoBehaviour
 
     void Start()
     {
+        _transition = gameObject.GetComponent<StateTransition>() ?? gameObject.GetComponentInParent<StateTransition>();
+        
         var children = new List<GameObject>(_items.Count);
 
         for (int i = 0; i < _items.Count; i++)
@@ -45,7 +48,7 @@ public class Menu : MonoBehaviour
 
         _arrow = new GameObject();
         _arrow.transform.parent = gameObject.transform;
-        _arrow.transform.Translate((maxWidth - _widths[0]) / 2, -1, 0);
+        _arrow.transform.localPosition =  new Vector3((maxWidth - _widths[0]) / 2, -1, _arrow.transform.position.z);
 
         var tex = Resources.Load<Texture2D>("Textures/arrow");
         tex.filterMode = FilterMode.Point;
@@ -61,22 +64,25 @@ public class Menu : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+        if (_transition.IsStateActive())
         {
-            _selectedItem -= 1;
-            if (_selectedItem < 0) _selectedItem = _items.Count - 1;
-            MoveArrow(_selectedItem);
-        }
-        else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
-        {
-            _selectedItem += 1;
-            if (_selectedItem >= _items.Count) _selectedItem = 0;
-            MoveArrow(_selectedItem);
-        }
-        else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
-        {
-            var action = _items[_selectedItem].Item2;
-            action();
+            if (Input.GetKeyDown(KeyCode.UpArrow) || Input.GetKeyDown(KeyCode.W))
+            {
+                _selectedItem -= 1;
+                if (_selectedItem < 0) _selectedItem = _items.Count - 1;
+                MoveArrow(_selectedItem);
+            }
+            else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
+            {
+                _selectedItem += 1;
+                if (_selectedItem >= _items.Count) _selectedItem = 0;
+                MoveArrow(_selectedItem);
+            }
+            else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
+            {
+                var action = _items[_selectedItem].Item2;
+                action();
+            }
         }
     }
 
