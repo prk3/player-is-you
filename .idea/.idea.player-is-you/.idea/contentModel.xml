@@ -9,18 +9,21 @@
         <e p="Resources" t="Include">
           <e p="Levels" t="Include">
             <e p="0.txt" t="Include" />
+            <e p="1.txt" t="Include" />
           </e>
         </e>
         <e p="Scripts" t="Include">
           <e p="Alphabet.cs" t="Include" />
           <e p="AnimatedSprite.cs" t="Include" />
           <e p="AnimatedText.cs" t="Include" />
+          <e p="GameStore.cs" t="Include" />
           <e p="Map.cs" t="Include" />
           <e p="Menu.cs" t="Include" />
           <e p="ObjectFitContain.cs" t="Include" />
           <e p="StateTransition.cs" t="Include" />
           <e p="States" t="Include">
             <e p="Gameplay.cs" t="Include" />
+            <e p="LevelSelectMenu.cs" t="Include" />
             <e p="StartMenu.cs" t="Include" />
           </e>
           <e p="Subjects" t="Include">

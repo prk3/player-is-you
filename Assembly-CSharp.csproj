@@ -62,10 +62,12 @@
     <Compile Include="Assets\Scripts\Alphabet.cs" />
     <Compile Include="Assets\Scripts\AnimatedSprite.cs" />
     <Compile Include="Assets\Scripts\AnimatedText.cs" />
+    <Compile Include="Assets\Scripts\GameStore.cs" />
     <Compile Include="Assets\Scripts\Map.cs" />
     <Compile Include="Assets\Scripts\Menu.cs" />
     <Compile Include="Assets\Scripts\ObjectFitContain.cs" />
     <Compile Include="Assets\Scripts\States\Gameplay.cs" />
+    <Compile Include="Assets\Scripts\States\LevelSelectMenu.cs" />
     <Compile Include="Assets\Scripts\States\StartMenu.cs" />
     <Compile Include="Assets\Scripts\StateTransition.cs" />
     <Compile Include="Assets\Scripts\Subjects\Subject.cs" />
@@ -79,6 +81,7 @@
     <Compile Include="Assets\Scripts\Traits\Win.cs" />
     <Compile Include="Assets\Scripts\Traits\You.cs" />
     <Compile Include="Assets\Scripts\Utils.cs" />
+    <None Include="Assets\Resources\Levels\1.txt" />
     <None Include="Assets\Resources\Levels\0.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/home/przemek/DEV/player-is-you/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>

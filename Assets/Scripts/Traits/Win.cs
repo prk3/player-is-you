@@ -1,5 +1,5 @@
+using States;
 using Subjects;
-using UnityEngine;
 
 namespace Traits
 {
@@ -21,7 +21,7 @@ namespace Traits
             {
                 if (subject.gameObject.GetComponent<You>())
                 {
-                    Debug.Log("WON!");
+                    gameObject.GetComponentInParent<Gameplay>().Win();
                     return AfterEnterOutcome.Break;
                 }
             }

@@ -35,9 +35,19 @@ color_to_id_map = {
 	"408000": 25, # trait float
 }
 
-def get_padded_id_from_color(r, g, b):
-	game_id = color_to_id_map["{:06x}".format((r << 16) + (g << 8) + b)]
-	return "{:02}".format(game_id)
+def get_padded_id_from_pixel(img, x, y):
+    pixel = img[y][x]
+    r = pixel[2]
+    g = pixel[1]
+    b = pixel[0]
+
+    try:
+        game_id = color_to_id_map["{:06x}".format((r << 16) + (g << 8) + b)]
+        return "{:02}".format(game_id)
+    except KeyError:
+        pass
+
+    raise Exception("Pixel at position x={0} y={1} contains unknown entity".format(x, y))
 
 
 assert(len(sys.argv) == 3)
@@ -46,11 +56,7 @@ img = cv2.imread(sys.argv[1])
 
 height, width, channels = img.shape
 
-ids = "".join([get_padded_id_from_color(
-	img[y][x][2],
-	img[y][x][1],
-	img[y][x][0]
-) for y in range(height) for x in range(width)])
+ids = "".join([get_padded_id_from_pixel(img, x, y) for y in range(height) for x in range(width)])
 
 output = "{}\n{}\n{}\n".format(width, height, ids)
 

@@ -9,14 +9,26 @@ public enum Align
 
 public class AnimatedText : MonoBehaviour
 {
-    private string _text = "";
-    private Align _align = Align.Left;
+    public string text = "";
+    public Align align = Align.Left;
+
+    private float _cachedWidth;
     
-    // Start is called before the first frame update
     private void Start()
     {
         float offset = 0.0f;
-        foreach (var c in _text)
+        float startX = 0.0f;
+
+        if (align == Align.Center)
+        {
+            startX = GetWidth() / -2.0f;
+        }
+        else if (align == Align.Right)
+        {
+            startX = GetWidth() * -1.0f;
+        }
+        
+        foreach (var c in text)
         {
             if (c == ' ')
             {
@@ -28,7 +40,8 @@ public class AnimatedText : MonoBehaviour
             
             var obj = new GameObject("char");
             obj.gameObject.transform.parent = gameObject.transform;
-            obj.gameObject.transform.localPosition = new Vector3(offset, -1, 0);
+            obj.gameObject.transform.localPosition = new Vector3(startX + offset, -1, 0);
+            obj.gameObject.transform.localScale = Vector3.one;
             
             var ren = obj.AddComponent<SpriteRenderer>();
             
@@ -45,21 +58,17 @@ public class AnimatedText : MonoBehaviour
         }
     }
 
-    public void SetText(string text)
-    {
-        _text = text;
-    }
-
-    public void SetAlign(Align align)
-    {
-        _align = align;
-    }
-
     public float GetWidth()
     {
-        return _text.Aggregate(0.0f, (acc, c) => acc + (c == ' '
-            ? 20.0f / 32.0f
-            : (Alphabet.PositionAndWidthOf(c) ?? Alphabet.PositionAndWidthOf('?')).Item2 / 32.0f
-        ));
+        if (_cachedWidth == 0.0f)
+        {
+            _cachedWidth = text.Aggregate(0.0f, (acc, c) => acc + (c == ' '
+                ? 20.0f / 32.0f
+                : (Alphabet.PositionAndWidthOf(c) ??
+                   Alphabet.PositionAndWidthOf('?')).Item2 / 32.0f
+            ));
+        }
+
+        return _cachedWidth;
     }
 }

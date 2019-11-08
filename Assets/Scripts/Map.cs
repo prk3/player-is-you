@@ -78,7 +78,6 @@ public class Map : MonoBehaviour
         _contain = gameObject.AddComponent<ObjectFitContain>();
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (_contain.Contain(width, height))

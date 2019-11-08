@@ -5,9 +5,14 @@ namespace States
     public class Gameplay : MonoBehaviour
     {
         private StateTransition _transition;
-        private bool _quickMenuOpened;
+        private bool _paused;
         private GameObject _overlay;
         private GameObject _menu;
+        private GameObject _lose;
+
+        private bool _redirecting;
+        private float _redirectingTime;
+        private float _redirectingDuration = 3f;
         
         void Start()
         {
@@ -16,14 +21,14 @@ namespace States
             var gameBoard = new GameObject("map");
             gameBoard.transform.parent = gameObject.transform;
             var map = gameBoard.AddComponent<Map>();
-            map.levelId = 0;
+            map.levelId = GameStore.Level;
 
             _overlay = GameObject.CreatePrimitive(PrimitiveType.Plane);
             _overlay.name = "overlay";
             _overlay.SetActive(false);
             _overlay.transform.parent = gameObject.transform;
             _overlay.transform.localPosition = new Vector3(0, 0, -1);
-            _overlay.transform.localScale = new Vector3(2, 1, 2);
+            _overlay.transform.localScale = new Vector3(3, 1, 3);
         
             var rotation = _overlay.transform.localRotation.eulerAngles;
             rotation.x = -90;
@@ -35,19 +40,31 @@ namespace States
             _menu = new GameObject("quick menu");
             _menu.SetActive(false);
             _menu.transform.parent = gameObject.transform;
-            _menu.transform.localPosition += Vector3.back + Vector3.back;
+            _menu.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
+
             var menuComp = _menu.AddComponent<Menu>();
             menuComp.AddItem("Continue", CloseQuickMenu);
             menuComp.AddItem("Restart", Restart);
-            menuComp.AddItem("Skip level", Skip);
             menuComp.AddItem("Exit", Exit);
         }
 
         void Update()
         {
-            if (_transition.IsStateActive())
+            if (_redirecting)
             {
-                if (_quickMenuOpened)
+                var dt = Time.deltaTime;
+
+                if (_redirectingTime + dt > _redirectingDuration)
+                {
+                    _transition.TransitionTo("SelectLevel");
+                }
+
+                _redirectingTime += dt;
+            }
+
+            else if (_transition.IsStateActive())
+            {
+                if (_paused)
                 {
                     if (Input.GetKeyDown(KeyCode.Escape)) CloseQuickMenu();
                     if (Input.GetKeyDown(KeyCode.R)) Restart();
@@ -62,15 +79,10 @@ namespace States
 
         public bool IsPlaying()
         {
-            return !_quickMenuOpened;
+            return !_paused;
         }
 
         public void Restart()
-        {
-            _transition.TransitionTo("Gameplay");
-        }
-
-        private void Skip()
         {
             _transition.TransitionTo("Gameplay");
         }
@@ -82,26 +94,54 @@ namespace States
 
         public void Lose()
         {
-            Debug.Log("Lost");
+            _paused = true;
+            var lose = new GameObject("win");
+            lose.transform.parent = gameObject.transform;
+            lose.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
+
+            var loseText = lose.AddComponent<AnimatedText>();
+            loseText.text = "You Lost. Try Again!";
+            loseText.align = Align.Center;
+
+            _redirecting = true;
+            _redirectingTime = 0;
         }
 
         public void Win()
         {
-            Debug.Log("WON");
+            _paused = true;
+
+            var unlockedLevels = PlayerPrefs.GetString("unlocked_levels");
+            if (unlockedLevels[GameStore.Level] == '0')
+            {
+                PlayerPrefs.SetString("unlocked_levels",
+                    unlockedLevels.Substring(0, GameStore.Level) +
+                    '1' +
+                    unlockedLevels.Substring(GameStore.Level + 1));
+                PlayerPrefs.Save();
+            }
+            
+            var win = new GameObject("win");
+            win.transform.parent = gameObject.transform;
+            win.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
+
+            var winText = win.AddComponent<AnimatedText>();
+            winText.text = $"You have completed level ${GameStore.Level}!";
+            winText.align = Align.Center;
         }
 
         public void OpenQuickMenu()
         {
+            _paused = false;
             _overlay.SetActive(true);
             _menu.SetActive(true);
-            _quickMenuOpened = true;
         }
 
         private void CloseQuickMenu()
         {
+            _paused = false;
             _overlay.SetActive(false);
             _menu.SetActive(false);
-            _quickMenuOpened = false;
         }
     }
 }
