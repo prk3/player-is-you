@@ -13,11 +13,6 @@ namespace Traits
         private StateTransition _stateTransition;
         private Gameplay _gameplay;
 
-        public override int GetInteractionOrder()
-        {
-            return 100;
-        }
-
         void Start()
         {
             _stateTransition = gameObject.GetComponentInParent<StateTransition>();
@@ -29,13 +24,14 @@ namespace Traits
         void Update()
         {
             CheckMoveEnd();
-            
-            if (!_subject.IsMoving() && (!_gameplay || _gameplay.IsPlaying()) && (!_stateTransition || _stateTransition.IsStateActive()))
+
+            if (!_subject.IsMoving() && (!_gameplay || _gameplay.IsPlaying()) &&
+                (!_stateTransition || _stateTransition.IsStateActive()))
             {
                 int up = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) ? 1 : 0;
                 int down = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) ? 1 : 0;
-                int right = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D)  ? 1 : 0;
-                int left = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A)  ? 1 : 0;
+                int right = Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.D) ? 1 : 0;
+                int left = Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.A) ? 1 : 0;
 
                 // only one is pressed
                 if (up + down + right + left == 1)
@@ -60,6 +56,11 @@ namespace Traits
             }
         }
 
+        public override int GetInteractionOrder()
+        {
+            return 100;
+        }
+
         private void TryMove(MoveDirection dir)
         {
             var thisSubject = gameObject.GetComponent<Subject>();
@@ -74,18 +75,18 @@ namespace Traits
                     _movedSubjects.Add(s);
                     _movingSubjects.Push(s);
                 }
-                
+
                 thisSubject.MoveTo(dir, RegisterMove);
-                
+
                 var positions = new List<Vector2Int>(_movedSubjects.Count + 1) {startingPosition};
-                
+
                 for (int i = _movedSubjects.Count - 1; i >= 0; i--)
                 {
                     _subject = _movedSubjects[i];
                     positions.Add(new Vector2Int(_subject.x, _subject.y));
                     _subject.AfterMoveEarly();
                 }
-                
+
                 var map = gameObject.GetComponentInParent<Map>();
                 map.RefreshPositions(positions);
             }
@@ -94,7 +95,7 @@ namespace Traits
         private void CheckMoveEnd()
         {
             if (_movedSubjects == null) return;
-            
+
             while (_movingSubjects.Count > 0 && !_movingSubjects.Peek().IsMoving())
             {
                 _movingSubjects.Pop();
@@ -110,10 +111,9 @@ namespace Traits
 
             _movedSubjects = null;
             _movingSubjects = null;
-            
+
             var map = gameObject.GetComponentInParent<Map>();
             map.UpdateRules();
         }
     }
 }
-
