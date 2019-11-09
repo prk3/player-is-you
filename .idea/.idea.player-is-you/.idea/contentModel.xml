@@ -10,6 +10,7 @@
           <e p="Levels" t="Include">
             <e p="0.txt" t="Include" />
             <e p="1.txt" t="Include" />
+            <e p="2.txt" t="Include" />
           </e>
         </e>
         <e p="Scripts" t="Include">

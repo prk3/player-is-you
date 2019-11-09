@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 public class Menu : MonoBehaviour
 {
@@ -22,12 +23,7 @@ public class Menu : MonoBehaviour
     private List<Item> _items = new List<Item>();
     private List<float> _widths = new List<float>();
     private int _selectedItem;
-
-    public void AddItem(string text, Action d, bool locked = false)
-    {
-        _items.Add(new Item(text, d, locked));
-    }
-
+    
     void Start()
     {
         _transition = gameObject.GetComponent<StateTransition>() ?? gameObject.GetComponentInParent<StateTransition>();
@@ -42,12 +38,17 @@ public class Menu : MonoBehaviour
             textComponent.text = _items[i].Title;
             textComponent.align = Align.Center;
 
+            if (_items[i].Locked)
+            {
+                textComponent.color = new Color(0.3f, 0.3f, 0.3f, 1);
+            }
+
             _widths.Add(textComponent.GetWidth());
         }
 
         _arrow = new GameObject();
         _arrow.transform.parent = gameObject.transform;
-        _arrow.transform.localPosition =  new Vector3((_widths[_selectedItem] / -2.0f) - 2.0f, -1, _arrow.transform.position.z);
+        MoveArrow(_selectedItem);
 
         var tex = Resources.Load<Texture2D>("Textures/arrow");
         tex.filterMode = FilterMode.Point;
@@ -95,6 +96,19 @@ public class Menu : MonoBehaviour
                 action();
             }
         }
+    }
+    
+    public void AddItem(string text, Action d, bool locked = false)
+    {
+        _items.Add(new Item(text, d, locked));
+    }
+
+    public void SelectItem(int index)
+    {
+        Debug.Assert(index >= 0);
+        Debug.Assert(index < _items.Count);
+        Debug.Assert(_items[index].Locked == false);
+        _selectedItem = index;
     }
 
     void MoveArrow(int index)

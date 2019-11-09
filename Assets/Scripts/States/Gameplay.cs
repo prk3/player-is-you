@@ -52,14 +52,13 @@ namespace States
         {
             if (_redirecting)
             {
-                var dt = Time.deltaTime;
+                _redirectingTime += Time.deltaTime;
 
-                if (_redirectingTime + dt > _redirectingDuration)
+                if (_redirectingTime > _redirectingDuration)
                 {
-                    _transition.TransitionTo("SelectLevel");
+                    _redirecting = false;
+                    _transition.TransitionTo("LevelSelectMenu");
                 }
-
-                _redirectingTime += dt;
             }
 
             else if (_transition.IsStateActive())
@@ -95,6 +94,8 @@ namespace States
         public void Lose()
         {
             _paused = true;
+            _overlay.SetActive(true);
+            
             var lose = new GameObject("win");
             lose.transform.parent = gameObject.transform;
             lose.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
@@ -103,6 +104,7 @@ namespace States
             loseText.text = "You Lost. Try Again!";
             loseText.align = Align.Center;
 
+            GameStore.SelectedLevel = GameStore.Level;
             _redirecting = true;
             _redirectingTime = 0;
         }
@@ -110,14 +112,15 @@ namespace States
         public void Win()
         {
             _paused = true;
+            _overlay.SetActive(true);
 
             var unlockedLevels = PlayerPrefs.GetString("unlocked_levels");
-            if (unlockedLevels[GameStore.Level] == '0')
+            if (GameStore.Level + 1 < unlockedLevels.Length && unlockedLevels[GameStore.Level + 1] == '0')
             {
                 PlayerPrefs.SetString("unlocked_levels",
-                    unlockedLevels.Substring(0, GameStore.Level) +
+                    unlockedLevels.Substring(0, GameStore.Level + 1) +
                     '1' +
-                    unlockedLevels.Substring(GameStore.Level + 1));
+                    unlockedLevels.Substring(GameStore.Level + 2));
                 PlayerPrefs.Save();
             }
             
@@ -126,13 +129,17 @@ namespace States
             win.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
 
             var winText = win.AddComponent<AnimatedText>();
-            winText.text = $"You have completed level ${GameStore.Level}!";
+            winText.text = $"You completed level ${GameStore.Level + 1}!";
             winText.align = Align.Center;
+
+            GameStore.SelectedLevel = GameStore.Level + 1 >= unlockedLevels.Length ? -1 : GameStore.Level + 1;
+            _redirecting = true;
+            _redirectingTime = 0;
         }
 
         public void OpenQuickMenu()
         {
-            _paused = false;
+            _paused = true;
             _overlay.SetActive(true);
             _menu.SetActive(true);
         }

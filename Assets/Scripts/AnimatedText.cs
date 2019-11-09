@@ -11,6 +11,7 @@ public class AnimatedText : MonoBehaviour
 {
     public string text = "";
     public Align align = Align.Left;
+    public Color color = Color.white;
 
     private float _cachedWidth;
     
@@ -51,6 +52,8 @@ public class AnimatedText : MonoBehaviour
                 new Vector2(0, 0),
                 32
             );
+
+            ren.material.color = color;
 
             obj.AddComponent<AnimatedSprite>();
 

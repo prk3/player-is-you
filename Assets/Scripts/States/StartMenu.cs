@@ -1,21 +1,25 @@
+using System;
 using UnityEngine;
 
 namespace States
 {
     public class StartMenu : MonoBehaviour
     {
+        private StateTransition _transition;
+        public string defaultUnlockedLevels = "1000";
+        
         void Awake()
         {
             if (!PlayerPrefs.HasKey("unlocked_levels"))
             {
-                PlayerPrefs.SetString("unlocked_levels", "1000");
+                PlayerPrefs.SetString("unlocked_levels", defaultUnlockedLevels);
                 PlayerPrefs.Save();
             }
         }
         
         void Start()
         {
-            var transition = gameObject.AddComponent<StateTransition>();
+            _transition = gameObject.AddComponent<StateTransition>();
 
             var title = new GameObject("title");
             title.transform.parent = gameObject.transform;
@@ -29,8 +33,24 @@ namespace States
             menu.transform.parent = gameObject.transform;
 
             var menuComp = menu.AddComponent<Menu>();
-            menuComp.AddItem("Play", () => transition.TransitionTo("LevelSelectMenu"));
+            menuComp.AddItem("Play", () => _transition.TransitionTo("LevelSelectMenu"));
             menuComp.AddItem("Quit", () => Application.Quit());
+        }
+        
+        private void Update()
+        {
+            if (_transition.IsStateActive())
+            {
+                // reset unlocked levels when d + e + l held
+                if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.E) && Input.GetKey(KeyCode.L))
+                {
+                    if (PlayerPrefs.GetString("unlocked_levels") != defaultUnlockedLevels)
+                    {
+                        PlayerPrefs.SetString("unlocked_levels", defaultUnlockedLevels);
+                        PlayerPrefs.Save();
+                    }
+                }
+            }
         }
     }
 }
