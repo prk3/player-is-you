@@ -1,15 +1,15 @@
 ﻿using System.Collections.Generic;
 using States;
-using Subjects;
+using Entities;
 using UnityEngine;
 
 namespace Traits
 {
     public class You : Trait
     {
-        private Subject _subject;
-        private List<Subject> _movedSubjects;
-        private Stack<Subject> _movingSubjects;
+        private Entity _entity;
+        private List<Entity> _movedEntities;
+        private Stack<Entity> _movingEntities;
         private StateTransition _stateTransition;
         private Gameplay _gameplay;
 
@@ -17,7 +17,7 @@ namespace Traits
         {
             _stateTransition = gameObject.GetComponentInParent<StateTransition>();
             _gameplay = gameObject.GetComponentInParent<Gameplay>();
-            _subject = gameObject.GetComponent<Subject>();
+            _entity = gameObject.GetComponent<Entity>();
         }
 
         // Update is called once per frame
@@ -25,7 +25,7 @@ namespace Traits
         {
             CheckMoveEnd();
 
-            if (!_subject.IsMoving() && (!_gameplay || _gameplay.IsPlaying()) &&
+            if (!_entity.IsMoving() && (!_gameplay || _gameplay.IsPlaying()) &&
                 (!_stateTransition || _stateTransition.IsStateActive()))
             {
                 int up = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) ? 1 : 0;
@@ -63,28 +63,28 @@ namespace Traits
 
         private void TryMove(MoveDirection dir)
         {
-            var thisSubject = gameObject.GetComponent<Subject>();
-            if (thisSubject.CanMoveTo(dir))
+            var thisEntity = gameObject.GetComponent<Entity>();
+            if (thisEntity.CanMoveTo(dir))
             {
-                var startingPosition = new Vector2Int(thisSubject.x, thisSubject.y);
-                _movedSubjects = new List<Subject>();
-                _movingSubjects = new Stack<Subject>();
+                var startingPosition = new Vector2Int(thisEntity.x, thisEntity.y);
+                _movedEntities = new List<Entity>();
+                _movingEntities = new Stack<Entity>();
 
-                void RegisterMove(Subject s)
+                void RegisterMove(Entity s)
                 {
-                    _movedSubjects.Add(s);
-                    _movingSubjects.Push(s);
+                    _movedEntities.Add(s);
+                    _movingEntities.Push(s);
                 }
 
-                thisSubject.MoveTo(dir, RegisterMove);
+                thisEntity.MoveTo(dir, RegisterMove);
 
-                var positions = new List<Vector2Int>(_movedSubjects.Count + 1) {startingPosition};
+                var positions = new List<Vector2Int>(_movedEntities.Count + 1) {startingPosition};
 
-                for (int i = _movedSubjects.Count - 1; i >= 0; i--)
+                for (int i = _movedEntities.Count - 1; i >= 0; i--)
                 {
-                    _subject = _movedSubjects[i];
-                    positions.Add(new Vector2Int(_subject.x, _subject.y));
-                    _subject.AfterMoveEarly();
+                    _entity = _movedEntities[i];
+                    positions.Add(new Vector2Int(_entity.x, _entity.y));
+                    _entity.AfterMoveEarly();
                 }
 
                 var map = gameObject.GetComponentInParent<Map>();
@@ -94,23 +94,23 @@ namespace Traits
 
         private void CheckMoveEnd()
         {
-            if (_movedSubjects == null) return;
+            if (_movedEntities == null) return;
 
-            while (_movingSubjects.Count > 0 && !_movingSubjects.Peek().IsMoving())
+            while (_movingEntities.Count > 0 && !_movingEntities.Peek().IsMoving())
             {
-                _movingSubjects.Pop();
+                _movingEntities.Pop();
             }
 
-            if (_movingSubjects.Count != 0) return;
+            if (_movingEntities.Count != 0) return;
 
-            for (int i = _movedSubjects.Count - 1; i >= 0; i--)
+            for (int i = _movedEntities.Count - 1; i >= 0; i--)
             {
-                _subject = _movedSubjects[i];
-                _subject.AfterMoveLate();
+                _entity = _movedEntities[i];
+                _entity.AfterMoveLate();
             }
 
-            _movedSubjects = null;
-            _movingSubjects = null;
+            _movedEntities = null;
+            _movingEntities = null;
 
             var map = gameObject.GetComponentInParent<Map>();
             map.UpdateRules();

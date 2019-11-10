@@ -1,5 +1,5 @@
 using System;
-using Subjects;
+using Entities;
 
 namespace Traits
 {
@@ -10,12 +10,12 @@ namespace Traits
             return 700;
         }
 
-        public override bool CanEnter(Subject entering, MoveDirection dir)
+        public override bool CanEnter(Entity entering, MoveDirection dir)
         {
             return true;
         }
 
-        public override OnEnterOutcome OnEnter(Subject entering, MoveDirection dir, Action<Subject> registerMove)
+        public override OnEnterOutcome OnEnter(Entity entering, MoveDirection dir, Action<Entity> registerMove)
         {
             return OnEnterOutcome.PullDown;
         }

@@ -1,6 +1,4 @@
 using States;
-using Subjects;
-using UnityEngine;
 
 namespace Traits
 {
@@ -10,17 +8,17 @@ namespace Traits
         {
             return 200;
         }
-        
+
         public override AfterEnterOutcome AfterEnterLate()
         {
             var map = gameObject.GetComponentInParent<Map>();
-            var thisSubject = gameObject.GetComponent<Subject>();
-            
+            var thisSubject = gameObject.GetComponent<Entities.Entity>();
+
             var stack = map.stacks[thisSubject.y][thisSubject.x];
 
-            foreach (var subject in stack)
+            foreach (var entity in stack)
             {
-                if (subject.gameObject.GetComponent<You>())
+                if (entity.gameObject.GetComponent<You>())
                 {
                     gameObject.GetComponentInParent<Gameplay>().Lose();
                     return AfterEnterOutcome.Break;

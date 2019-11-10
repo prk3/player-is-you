@@ -1,11 +1,11 @@
-using Subjects;
+using Entities;
 using UnityEngine;
 
 public class TileMod : MonoBehaviour
 {
     /**
      * Maps neighbours byte to tile position in mod tilemap.
-     * The following weights are applied to subject's neighbours:
+     * The following weights are applied to entity's neighbours:
      * [ 1 ] [ 2 ] [ 4 ]
      * [ 8 ]       [ 16]
      * [ 32] [ 64] [128]
@@ -28,7 +28,7 @@ public class TileMod : MonoBehaviour
         (1 << 4) + 0, //  13
         (2 << 4) + 1, //  14
         (6 << 4) + 0, //  15
-        
+
         (3 << 4) + 0, //  16
         (3 << 4) + 0, //  17
         (3 << 4) + 1, //  18
@@ -45,7 +45,7 @@ public class TileMod : MonoBehaviour
         (7 << 4) + 4, //  29
         (2 << 4) + 2, //  30
         (6 << 4) + 1, //  31
-        
+
         // 5th bit is the bottom left corner
         // the following 32 numbers are the same as elements [0, 31]
         (4 << 4) + 5, //  32
@@ -64,7 +64,7 @@ public class TileMod : MonoBehaviour
         (1 << 4) + 0, //  45
         (2 << 4) + 1, //  46
         (6 << 4) + 0, //  47
-        
+
         (3 << 4) + 0, //  48
         (3 << 4) + 0, //  49
         (3 << 4) + 1, //  50
@@ -81,7 +81,7 @@ public class TileMod : MonoBehaviour
         (7 << 4) + 4, //  61
         (2 << 4) + 2, //  62
         (6 << 4) + 1, //  63
-        
+
         (0 << 4) + 0, //  64
         (0 << 4) + 0, //  65
         (6 << 4) + 4, //  66
@@ -98,7 +98,7 @@ public class TileMod : MonoBehaviour
         (1 << 4) + 1, //  77
         (1 << 4) + 3, //  78
         (1 << 4) + 2, //  79
-        
+
         (0 << 4) + 1, //  80
         (0 << 4) + 1, //  81
         (3 << 4) + 3, //  82
@@ -115,7 +115,7 @@ public class TileMod : MonoBehaviour
         (0 << 4) + 3, //  93
         (3 << 4) + 5, //  94
         (3 << 4) + 4, //  95
-        
+
         (0 << 4) + 0, //  96
         (0 << 4) + 0, //  97
         (6 << 4) + 4, //  98
@@ -132,7 +132,7 @@ public class TileMod : MonoBehaviour
         (5 << 4) + 0, // 109
         (5 << 4) + 2, // 110
         (5 << 4) + 1, // 111
-        
+
         (0 << 4) + 1, // 112
         (0 << 4) + 1, // 113
         (3 << 4) + 3, // 114
@@ -149,7 +149,7 @@ public class TileMod : MonoBehaviour
         (0 << 4) + 2, // 125
         (5 << 4) + 4, // 126
         (7 << 4) + 3, // 127
-        
+
         // 7th bit in the bottom right corner
         // the following 64 numbers are the same as elements [0, 63]
         (4 << 4) + 5, // 128
@@ -168,7 +168,7 @@ public class TileMod : MonoBehaviour
         (1 << 4) + 0, // 141
         (2 << 4) + 1, // 142
         (6 << 4) + 0, // 143
-        
+
         (3 << 4) + 0, // 144
         (3 << 4) + 0, // 145
         (3 << 4) + 1, // 146
@@ -185,7 +185,7 @@ public class TileMod : MonoBehaviour
         (7 << 4) + 4, // 157
         (2 << 4) + 2, // 158
         (6 << 4) + 1, // 159
-        
+
         // repeating [0, 31] here
         (4 << 4) + 5, // 160
         (4 << 4) + 5, // 161
@@ -203,7 +203,7 @@ public class TileMod : MonoBehaviour
         (1 << 4) + 0, // 173
         (2 << 4) + 1, // 174
         (6 << 4) + 0, // 175
-        
+
         (3 << 4) + 0, // 176
         (3 << 4) + 0, // 177
         (3 << 4) + 1, // 178
@@ -220,7 +220,7 @@ public class TileMod : MonoBehaviour
         (7 << 4) + 4, // 189
         (2 << 4) + 2, // 190
         (6 << 4) + 1, // 191
-        
+
         // repeating [64, 79] here
         (0 << 4) + 0, // 192
         (0 << 4) + 0, // 193
@@ -238,7 +238,7 @@ public class TileMod : MonoBehaviour
         (1 << 4) + 1, // 205
         (1 << 4) + 3, // 206
         (1 << 4) + 2, // 207
-        
+
         (4 << 4) + 0, // 208
         (4 << 4) + 0, // 209
         (3 << 4) + 2, // 210
@@ -255,7 +255,7 @@ public class TileMod : MonoBehaviour
         (4 << 4) + 2, // 221
         (0 << 4) + 4, // 222
         (4 << 4) + 3, // 223
-        
+
         (0 << 4) + 0, // 224
         (0 << 4) + 0, // 225
         (6 << 4) + 4, // 226
@@ -272,7 +272,7 @@ public class TileMod : MonoBehaviour
         (5 << 4) + 0, // 237
         (5 << 4) + 2, // 238
         (5 << 4) + 1, // 239
-        
+
         (4 << 4) + 0, // 240
         (4 << 4) + 0, // 241
         (3 << 4) + 2, // 242
@@ -312,7 +312,7 @@ public class TileMod : MonoBehaviour
     {
         // texture pixels are laid out left-to-right, bottom-to-top
         // yes, bottom-to-top (Oo)
-        
+
         Color32[] sourcePixels = source.GetPixels32();
         Color32[] modPixels = mod.GetPixels32();
         Color32[] newPixels = new Color32[size.x * size.y];
@@ -333,7 +333,7 @@ public class TileMod : MonoBehaviour
                     : modPixel;
             }
         }
-        
+
         Texture2D newTexture = new Texture2D(size.x, size.y);
         newTexture.SetPixels32(newPixels);
         newTexture.Apply();
@@ -346,11 +346,11 @@ public class TileMod : MonoBehaviour
 
     void Start()
     {
-        var subject = gameObject.GetComponent<Subject>();
+        var entity = gameObject.GetComponent<Entity>();
         var map = gameObject.GetComponentInParent<Map>();
-        ApplyMod(map.CollectNeighborsByte(subject, true));
+        ApplyMod(map.CollectNeighborsByte(entity, true));
     }
-    
+
     public void ApplyMod(byte neighbors)
     {
         // if gameObject has AnimatedSprite component, let it handle mod applying
@@ -362,17 +362,17 @@ public class TileMod : MonoBehaviour
                 GetModPositionFromNeighbors(neighbors) * new Vector2Int(modWidth, modHeight));
             return;
         }
-        
+
         // otherwise, just apply mod to SpriteRenderer
         var rendererComp = gameObject.GetComponent<SpriteRenderer>();
         if (rendererComp)
         {
             Sprite s = rendererComp.sprite;
-            
+
             // new texture should have the same size as old one
             Debug.Assert((int)s.textureRect.width == modWidth);
             Debug.Assert((int)s.textureRect.height == modHeight);
-            
+
             Texture2D newTexture = MakeModdedTexture(
                 s.texture,
                 new Vector2Int((int) s.textureRect.x, (int) s.textureRect.y),
@@ -388,7 +388,7 @@ public class TileMod : MonoBehaviour
                 s.pivot,
                 s.pixelsPerUnit);
         }
-        
+
         Debug.LogError("TileMod could not find editable sprite");
     }
 }

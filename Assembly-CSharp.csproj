@@ -62,6 +62,7 @@
     <Compile Include="Assets\Scripts\Alphabet.cs" />
     <Compile Include="Assets\Scripts\AnimatedSprite.cs" />
     <Compile Include="Assets\Scripts\AnimatedText.cs" />
+    <Compile Include="Assets\Scripts\Entities\Entity.cs" />
     <Compile Include="Assets\Scripts\GameStore.cs" />
     <Compile Include="Assets\Scripts\Map.cs" />
     <Compile Include="Assets\Scripts\Menu.cs" />
@@ -70,7 +71,6 @@
     <Compile Include="Assets\Scripts\States\LevelSelectMenu.cs" />
     <Compile Include="Assets\Scripts\States\StartMenu.cs" />
     <Compile Include="Assets\Scripts\StateTransition.cs" />
-    <Compile Include="Assets\Scripts\Subjects\Subject.cs" />
     <Compile Include="Assets\Scripts\TileMod.cs" />
     <Compile Include="Assets\Scripts\Traits\Float.cs" />
     <Compile Include="Assets\Scripts\Traits\Lose.cs" />

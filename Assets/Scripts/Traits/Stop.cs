@@ -1,4 +1,4 @@
-using Subjects;
+using Entities;
 
 namespace Traits
 {
@@ -9,7 +9,7 @@ namespace Traits
             return 600;
         }
 
-        public override bool CanEnter(Subject initiator, MoveDirection dir)
+        public override bool CanEnter(Entity initiator, MoveDirection dir)
         {
             return false;
         }

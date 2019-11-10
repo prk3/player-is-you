@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Subjects;
+using Entities;
 using UnityEngine;
 
 namespace Traits
@@ -12,16 +12,16 @@ namespace Traits
             return 500;
         }
 
-        public override bool CanEnter(Subject entering, MoveDirection dir)
+        public override bool CanEnter(Entity entering, MoveDirection dir)
         {
-            Subject thisSubject = gameObject.GetComponent<Subject>();
-            return thisSubject.CanMoveTo(dir);
+            Entity thisEntity = gameObject.GetComponent<Entity>();
+            return thisEntity.CanMoveTo(dir);
         }
 
-        public override OnEnterOutcome OnEnter(Subject entering, MoveDirection dir, Action<Subject> registerMove)
+        public override OnEnterOutcome OnEnter(Entity entering, MoveDirection dir, Action<Entity> registerMove)
         {
-            Subject thisSubject = gameObject.GetComponent<Subject>();
-            thisSubject.MoveTo(dir, registerMove);
+            Entity thisEntity = gameObject.GetComponent<Entity>();
+            thisEntity.MoveTo(dir, registerMove);
 
             return OnEnterOutcome.Break;
         }

@@ -4,7 +4,7 @@ using System.Linq;
 using Traits;
 using UnityEngine;
 
-namespace Subjects
+namespace Entities
 {
     public enum MoveDirection
     {
@@ -14,16 +14,16 @@ namespace Subjects
         Right
     }
 
-    public enum SubjectType
+    public enum EntityType
     {
         // decoration blocks
         DecorationBush = 1,
         DecorationTile,
         DecorationUnknown,
-    
+
         // is connector in "[subject] is [trait]" rules
         ConnectorIs,
-    
+
         // regular entities
         Player,
         Rock,
@@ -32,7 +32,7 @@ namespace Subjects
         Flag,
         Skull,
         Cloud,
-    
+
         // subjects in "[subject] is [trait]" rules
         SubjectPlayer,
         SubjectRock,
@@ -41,7 +41,7 @@ namespace Subjects
         SubjectFlag,
         SubjectSkull,
         SubjectCloud,
-    
+
         // traits in "[subject] is [trait]" rules
         TraitYou,
         TraitPush,
@@ -52,47 +52,47 @@ namespace Subjects
         TraitFloat,
     }
 
-    public class Subject : MonoBehaviour
+    public class Entity : MonoBehaviour
     {
         // will be initialized in Awake
         private static Texture2D _texture;
-    
-        private static readonly Dictionary<SubjectType, SubjectType> SubjectToEntityMap = new Dictionary<SubjectType,SubjectType>
+
+        private static readonly Dictionary<EntityType, EntityType> SubjectToEntityMap = new Dictionary<EntityType,EntityType>
         {
-            { SubjectType.SubjectPlayer, SubjectType.Player },
-            { SubjectType.SubjectRock,   SubjectType.Rock },
-            { SubjectType.SubjectWater,  SubjectType.Water },
-            { SubjectType.SubjectWall,   SubjectType.Wall },
-            { SubjectType.SubjectFlag,   SubjectType.Flag },
-            { SubjectType.SubjectSkull,  SubjectType.Skull },
-            { SubjectType.SubjectCloud,  SubjectType.Cloud }
+            { EntityType.SubjectPlayer, EntityType.Player },
+            { EntityType.SubjectRock,   EntityType.Rock },
+            { EntityType.SubjectWater,  EntityType.Water },
+            { EntityType.SubjectWall,   EntityType.Wall },
+            { EntityType.SubjectFlag,   EntityType.Flag },
+            { EntityType.SubjectSkull,  EntityType.Skull },
+            { EntityType.SubjectCloud,  EntityType.Cloud }
         };
-    
-        private static readonly Dictionary<SubjectType, Type> TraitToBehaviorMap = new Dictionary<SubjectType, Type>
+
+        private static readonly Dictionary<EntityType, Type> TraitToBehaviorMap = new Dictionary<EntityType, Type>
         {
-            { SubjectType.TraitYou, typeof(Traits.You) },
-            { SubjectType.TraitPush, typeof(Traits.Push) },
-            { SubjectType.TraitSink, typeof(Traits.Sink) },
-            { SubjectType.TraitStop, typeof(Traits.Stop) },
-            { SubjectType.TraitWin, typeof(Traits.Win) },
-            { SubjectType.TraitLose, typeof(Traits.Lose) },
-            { SubjectType.TraitFloat, typeof(Traits.Float) }
+            { EntityType.TraitYou, typeof(You) },
+            { EntityType.TraitPush, typeof(Push) },
+            { EntityType.TraitSink, typeof(Sink) },
+            { EntityType.TraitStop, typeof(Stop) },
+            { EntityType.TraitWin, typeof(Win) },
+            { EntityType.TraitLose, typeof(Lose) },
+            { EntityType.TraitFloat, typeof(Float) }
         };
 
         // will be initialized in Awake
-        private static Dictionary<SubjectType, Texture2D> _subjectTypeToModTilemap;
-        
+        private static Dictionary<EntityType, Texture2D> _entityTypeToModTilemap;
+
         public static Texture2D GetTexture()
         {
             return _texture;
         }
 
-        public static Texture2D GetModTilemap(SubjectType type)
+        public static Texture2D GetModTilemap(EntityType type)
         {
-            _subjectTypeToModTilemap.TryGetValue(type, out var output);
+            _entityTypeToModTilemap.TryGetValue(type, out var output);
             return output;
         }
-        
+
         public static Vector2Int DirectionToVector(MoveDirection dir)
         {
             switch (dir)
@@ -105,28 +105,28 @@ namespace Subjects
                 default:                   return Vector2Int.zero;
             }
         }
-        
-        public static bool IsSubject(SubjectType t)
+
+        public static bool IsSubject(EntityType t)
         {
             return SubjectToEntityMap.ContainsKey(t);
         }
 
-        public static SubjectType GetSubjectType(SubjectType t)
+        public static EntityType GetEntityTypeFromSubject(EntityType t)
         {
             return SubjectToEntityMap[t];
         }
 
-        public static bool IsTrait(SubjectType t)
+        public static bool IsTrait(EntityType t)
         {
             return TraitToBehaviorMap.ContainsKey(t);
         }
-    
-        public static Type GetTraitBehavior(SubjectType t)
+
+        public static Type GetBehaviorFromTrait(EntityType t)
         {
             return TraitToBehaviorMap[t];
         }
-    
-        private SubjectType _type;
+
+        private EntityType _type;
         public int x;
         public int y;
         private int _z;
@@ -136,30 +136,30 @@ namespace Subjects
         private Vector2 _moveTo;
         private float _moveTime;
         private float _moveDuration;
-        
+
         void Awake()
         {
             if (_texture == null)
             {
-                _texture = Resources.Load<Texture2D>("Textures/subjects");
+                _texture = Resources.Load<Texture2D>("Textures/entities");
                 _texture.filterMode = FilterMode.Point;
             }
-            
-            if (_subjectTypeToModTilemap == null)
+
+            if (_entityTypeToModTilemap == null)
             {
-                _subjectTypeToModTilemap = new Dictionary<SubjectType, Texture2D>()
+                _entityTypeToModTilemap = new Dictionary<EntityType, Texture2D>()
                 {
-                    { SubjectType.Water, Resources.Load<Texture2D>("Textures/water_mod") },
-                    { SubjectType.Wall,  Resources.Load<Texture2D>("Textures/wall_mod") }
+                    { EntityType.Water, Resources.Load<Texture2D>("Textures/water_mod") },
+                    { EntityType.Wall,  Resources.Load<Texture2D>("Textures/wall_mod") }
                 };
             }
         }
-        
+
         void Start()
         {
             gameObject.transform.localPosition = new Vector3(x, -y - 1, 0);
         }
-    
+
         void Update()
         {
             if (_moving)
@@ -179,7 +179,7 @@ namespace Subjects
                 }
             }
         }
-        
+
         public int z
         {
             get { return _z; }
@@ -194,16 +194,16 @@ namespace Subjects
             }
         }
 
-        public SubjectType GetSubjectType()
+        public EntityType GetEntityType()
         {
             return _type;
         }
 
-        public void SetEntityType(SubjectType type)
+        public void SetEntityType(EntityType type)
         {
             _type = type;
         }
-        
+
         public void AnimateMove(Vector2Int from, Vector2Int to, float time = 0.18f)
         {
             _moveFrom = from;
@@ -212,7 +212,7 @@ namespace Subjects
             _moveTime = 0;
             _moving = true;
         }
-        
+
         public bool IsMoving()
         {
             return _moving;
@@ -223,23 +223,23 @@ namespace Subjects
             Map map = gameObject.GetComponentInParent<Map>();
             var thisPos = new Vector2Int(x, y);
             var to = thisPos + DirectionToVector(dir);
-            
+
             if (!map.IsValidSpot(to)) return false;
-            List<Subject> newStack = map.stacks[to.y][to.x];
-            
+            List<Entity> newStack = map.stacks[to.y][to.x];
+
             return newStack.TrueForAll(
-                subject => subject.GetComponents<Trait>().ToList().TrueForAll(
+                entity => entity.GetComponents<Trait>().ToList().TrueForAll(
                     trait => trait.CanEnter(this, dir)));
         }
 
-        public void MoveTo(MoveDirection dir, Action<Subject> registerMove)
+        public void MoveTo(MoveDirection dir, Action<Entity> registerMove)
         {
             Map map = gameObject.GetComponentInParent<Map>();
             var thisPos = new Vector2Int(x, y);
             var to = thisPos + DirectionToVector(dir);
 
-            List<Subject> oldStack = map.stacks[y][x];
-            List<Subject> newStack = map.stacks[to.y][to.x];
+            List<Entity> oldStack = map.stacks[y][x];
+            List<Entity> newStack = map.stacks[to.y][to.x];
             z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
 
             oldStack.Remove(this);
@@ -249,8 +249,8 @@ namespace Subjects
 
             for (int i = 1; i < newStack.Count; i++)
             {
-                var subject = newStack[i];
-                foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
+                var entity = newStack[i];
+                foreach (var trait in entity.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
                 {
                     var outcome = trait.OnEnter(this, dir, registerMove);
                     switch (outcome)
@@ -261,14 +261,14 @@ namespace Subjects
                             newStack.Insert(newStackPosition, this);
                             break;
                         case OnEnterOutcome.Break:
-                            goto afterSubjectLoop;
+                            goto afterEntityLoop;
                         case OnEnterOutcome.Continue:
                             break;
                     }
                 }
                 afterTraitLoop: ;
             }
-            afterSubjectLoop: ;
+            afterEntityLoop: ;
 
             x = to.x;
             y = to.y;
@@ -280,59 +280,59 @@ namespace Subjects
         {
             Map map = gameObject.GetComponentInParent<Map>();
 
-            List<Subject> stack = map.stacks[y][x];
+            List<Entity> stack = map.stacks[y][x];
 
-            int pos = stack.FindIndex(subject => subject == this);
+            int pos = stack.FindIndex(entity => entity == this);
 
             if (pos >= 0)
             {
                 for (int i = pos + 1; i < stack.Count; i++)
                 {
-                    var subject = stack[i];
-                    foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
+                    var entity = stack[i];
+                    foreach (var trait in entity.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
                     {
                         var outcome = trait.AfterEnterEarly();
                         switch (outcome)
                         {
                             case AfterEnterOutcome.Break:
-                                goto afterSubjectLoop;
+                                goto afterEntityLoop;
                             case AfterEnterOutcome.Continue:
                                 break;
                         }
                     }
                     afterTraitLoop: ;
                 }
-                afterSubjectLoop: ;
+                afterEntityLoop: ;
             }
         }
-        
+
         public void AfterMoveLate()
         {
             Map map = gameObject.GetComponentInParent<Map>();
 
-            List<Subject> stack = map.stacks[y][x];
+            List<Entity> stack = map.stacks[y][x];
 
-            int pos = stack.FindIndex(subject => subject == this);
+            int pos = stack.FindIndex(entity => entity == this);
 
             if (pos >= 0)
             {
                 for (int i = pos + 1; i < stack.Count; i++)
                 {
-                    var subject = stack[i];
-                    foreach (var trait in subject.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
+                    var entity = stack[i];
+                    foreach (var trait in entity.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
                     {
                         var outcome = trait.AfterEnterLate();
                         switch (outcome)
                         {
                             case AfterEnterOutcome.Break:
-                                goto afterSubjectLoop;
+                                goto afterEntityLoop;
                             case AfterEnterOutcome.Continue:
                                 break;
                         }
                     }
                     afterTraitLoop: ;
                 }
-                afterSubjectLoop: ;
+                afterEntityLoop: ;
             }
         }
 

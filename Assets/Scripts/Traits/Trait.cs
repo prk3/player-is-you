@@ -1,5 +1,5 @@
 using System;
-using Subjects;
+using Entities;
 using UnityEngine;
 
 public enum OnEnterOutcome
@@ -21,13 +21,13 @@ namespace Traits
     {
 
         public abstract int GetInteractionOrder();
-        
-        public virtual bool CanEnter(Subject entering, MoveDirection dir)
+
+        public virtual bool CanEnter(Entity entering, MoveDirection dir)
         {
             return true;
         }
 
-        public virtual OnEnterOutcome OnEnter(Subject entering, MoveDirection dir, Action<Subject> registerMove)
+        public virtual OnEnterOutcome OnEnter(Entity entering, MoveDirection dir, Action<Entity> registerMove)
         {
             return OnEnterOutcome.Continue;
         }

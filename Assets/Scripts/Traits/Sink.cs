@@ -1,5 +1,5 @@
 using System;
-using Subjects;
+using Entities;
 
 namespace Traits
 {
@@ -10,7 +10,7 @@ namespace Traits
             return 300;
         }
 
-        public override OnEnterOutcome OnEnter(Subject entering, MoveDirection dir, Action<Subject> registerMove)
+        public override OnEnterOutcome OnEnter(Entity entering, MoveDirection dir, Action<Entity> registerMove)
         {
             Destroy(entering.gameObject);
             return OnEnterOutcome.Break;

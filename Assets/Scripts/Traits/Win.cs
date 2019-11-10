@@ -1,5 +1,5 @@
 using States;
-using Subjects;
+using Entities;
 
 namespace Traits
 {
@@ -13,13 +13,13 @@ namespace Traits
         public override AfterEnterOutcome AfterEnterLate()
         {
             var map = gameObject.GetComponentInParent<Map>();
-            var thisSubject = gameObject.GetComponent<Subject>();
-            
-            var stack = map.stacks[thisSubject.y][thisSubject.x];
+            var thisEntity = gameObject.GetComponent<Entity>();
 
-            foreach (var subject in stack)
+            var stack = map.stacks[thisEntity.y][thisEntity.x];
+
+            foreach (var entity in stack)
             {
-                if (subject.gameObject.GetComponent<You>())
+                if (entity.gameObject.GetComponent<You>())
                 {
                     gameObject.GetComponentInParent<Gameplay>().Win();
                     return AfterEnterOutcome.Break;
