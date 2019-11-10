@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using States;
 using Entities;
 
@@ -10,6 +11,7 @@ namespace Traits
             return 100;
         }
 
+        /*
         public override AfterEnterOutcome AfterEnterLate()
         {
             var map = gameObject.GetComponentInParent<Map>();
@@ -27,6 +29,24 @@ namespace Traits
             }
 
             return AfterEnterOutcome.Continue;
+        }
+        */
+
+        public override RuleApplicationOutcome ApplyRuleOnStack(List<Entity> stack)
+        {
+            bool thisEntityIsFloating = gameObject.GetComponent<Float>() != null;
+
+            foreach (var entity in stack)
+            {
+                bool entityIsFloating = entity.GetComponent<Float>() != null;
+                if (thisEntityIsFloating == entityIsFloating && entity.GetComponent<You>() != null)
+                {
+                    gameObject.GetComponentInParent<Gameplay>().Win();
+                    return RuleApplicationOutcome.Break;
+                }
+            }
+
+            return RuleApplicationOutcome.Continue;
         }
     }
 }

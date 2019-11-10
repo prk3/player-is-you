@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Entities;
 using UnityEngine;
 
@@ -11,6 +12,13 @@ public enum OnEnterOutcome
 
 public enum AfterEnterOutcome
 {
+    Break,
+    Continue,
+}
+
+public enum RuleApplicationOutcome
+{
+    Refresh,
     Break,
     Continue,
 }
@@ -32,6 +40,7 @@ namespace Traits
             return OnEnterOutcome.Continue;
         }
 
+        /*
         public virtual AfterEnterOutcome AfterEnterEarly()
         {
             return AfterEnterOutcome.Continue;
@@ -40,6 +49,12 @@ namespace Traits
         public virtual AfterEnterOutcome AfterEnterLate()
         {
             return AfterEnterOutcome.Continue;
+        }
+        */
+
+        public virtual RuleApplicationOutcome ApplyRuleOnStack(List<Entity> stack)
+        {
+            return RuleApplicationOutcome.Continue;
         }
     }
 }

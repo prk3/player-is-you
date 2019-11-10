@@ -276,6 +276,7 @@ namespace Entities
             map.UpdateRules();
         }
 
+        /*
         public void AfterMoveEarly()
         {
             Map map = gameObject.GetComponentInParent<Map>();
@@ -305,7 +306,9 @@ namespace Entities
                 afterEntityLoop: ;
             }
         }
+        */
 
+        /*
         public void AfterMoveLate()
         {
             Map map = gameObject.GetComponentInParent<Map>();
@@ -335,6 +338,7 @@ namespace Entities
                 afterEntityLoop: ;
             }
         }
+        */
 
         public void Refresh()
         {

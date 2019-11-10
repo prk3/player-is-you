@@ -84,7 +84,6 @@ namespace Traits
                 {
                     _entity = _movedEntities[i];
                     positions.Add(new Vector2Int(_entity.x, _entity.y));
-                    _entity.AfterMoveEarly();
                 }
 
                 var map = gameObject.GetComponentInParent<Map>();
@@ -103,17 +102,12 @@ namespace Traits
 
             if (_movingEntities.Count != 0) return;
 
-            for (int i = _movedEntities.Count - 1; i >= 0; i--)
-            {
-                _entity = _movedEntities[i];
-                _entity.AfterMoveLate();
-            }
-
             _movedEntities = null;
             _movingEntities = null;
 
             var map = gameObject.GetComponentInParent<Map>();
             map.UpdateRules();
+            map.ApplyRules();
         }
     }
 }

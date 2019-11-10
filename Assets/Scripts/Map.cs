@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Entities;
 using UnityEngine;
+using Traits;
 
 /**
  * Loads map from level_.txt file, renders tiles, parses and applies rules.
@@ -156,15 +157,15 @@ public class Map : MonoBehaviour
         return output;
     }
 
-    List<(EntityType, EntityType)> ExtractRules()
+    private List<(EntityType, EntityType)> ExtractRules()
     {
         var output = new List<(EntityType, EntityType)>();
 
         foreach (var row in stacks)
         {
-            foreach (var column in row)
+            foreach (var stack in row)
             {
-                foreach (Entity entity in column)
+                foreach (Entity entity in stack)
                 {
                     if (entity.GetEntityType() == EntityType.ConnectorIs)
                     {
@@ -288,5 +289,54 @@ public class Map : MonoBehaviour
                 entity.Refresh();
             }
         }
+    }
+
+    public void ApplyRules() {
+        for (int y = 0; y < height; y++)
+        {
+            var row = stacks[y];
+            for (int x = 0; x < width; x++)
+            {
+                var stack = row[x];
+
+                for (int t = 0; t < 20; t++)
+                {
+                    if (ApplyRulesOnStack(stack) != RuleApplicationOutcome.Refresh) goto triesEnd;
+                }
+
+                Debug.LogError($"The limit of trait updates has been reached for stack x={x}, y={y}");
+
+                triesEnd: ;
+            }
+        }
+    }
+
+    public RuleApplicationOutcome ApplyRulesOnStack(List<Entity> stack)
+    {
+        var traitOrderPairs = new List<(int, Trait)>();
+
+        for (int i = 0; i < stack.Count; i++)
+        {
+            foreach (var trait in stack[i].GetComponents<Trait>())
+            {
+                traitOrderPairs.Add((trait.GetInteractionOrder() - i, trait));
+            }
+        }
+
+        traitOrderPairs.Sort((a, b) => b.Item1 - a.Item1);
+
+        foreach (var (_, trait) in traitOrderPairs)
+        {
+            switch (trait.ApplyRuleOnStack(stack))
+            {
+                case RuleApplicationOutcome.Refresh:
+                    return RuleApplicationOutcome.Refresh;
+                case RuleApplicationOutcome.Break:
+                    return RuleApplicationOutcome.Break;
+                case RuleApplicationOutcome.Continue:
+                    break;
+            }
+        }
+        return RuleApplicationOutcome.Break;
     }
 }
