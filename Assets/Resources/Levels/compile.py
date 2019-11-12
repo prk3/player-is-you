@@ -35,15 +35,14 @@ color_to_id_map = {
 	"408000": 25, # trait float
 }
 
-def get_padded_id_from_pixel(img, x, y):
+def get_id_from_pixel(img, x, y):
     pixel = img[y][x]
     r = pixel[2]
     g = pixel[1]
     b = pixel[0]
 
     try:
-        game_id = color_to_id_map["{:06x}".format((r << 16) + (g << 8) + b)]
-        return "{:02}".format(game_id)
+        return color_to_id_map["{:06x}".format((r << 16) + (g << 8) + b)]
     except KeyError:
         pass
 
@@ -56,11 +55,10 @@ img = cv2.imread(sys.argv[1])
 
 height, width, channels = img.shape
 
-ids = "".join([get_padded_id_from_pixel(img, x, y) for y in range(height) for x in range(width)])
+ids = [get_id_from_pixel(img, x, y) for y in range(height) for x in range(width)]
+output = bytearray([width, height, *ids])
 
-output = "{}\n{}\n{}\n".format(width, height, ids)
-
-text_file = open(sys.argv[2], "w")
-text_file.write(output)
-text_file.close()
+file = open(sys.argv[2], "w+b")
+file.write(output)
+file.close()
 

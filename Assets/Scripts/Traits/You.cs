@@ -82,12 +82,11 @@ namespace Traits
 
                 for (int i = _movedEntities.Count - 1; i >= 0; i--)
                 {
-                    _entity = _movedEntities[i];
-                    positions.Add(new Vector2Int(_entity.x, _entity.y));
+                    positions.Add(new Vector2Int(_movedEntities[i].x, _movedEntities[i].y));
                 }
 
                 var map = gameObject.GetComponentInParent<Map>();
-                map.RefreshPositions(positions);
+                map.RefreshStacks(positions);
             }
         }
 

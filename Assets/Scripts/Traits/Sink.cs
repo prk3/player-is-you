@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Entities;
 using States;
+using UnityEngine;
 
 namespace Traits
 {
@@ -30,10 +31,12 @@ namespace Traits
                 bool entityIsFloating = entity.GetComponent<Float>() != null;
                 if (thisEntityIsFloating == entityIsFloating && entity.GetComponent<Sink>() == null)
                 {
+                    var map = gameObject.GetComponentInParent<Map>();
                     stack.Remove(entity);
                     Destroy(entity.gameObject);
                     stack.Remove(thisEntity);
                     Destroy(thisEntity.gameObject);
+                    map.RefreshStacks(new List<Vector2Int> { new Vector2Int(thisEntity.x, thisEntity.y)});
                     return RuleApplicationOutcome.Refresh;
                 }
             }

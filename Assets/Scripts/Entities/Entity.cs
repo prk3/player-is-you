@@ -175,7 +175,10 @@ namespace Entities
                     float PositionFunc(float x) => x * (2 - x);
 
                     var tmpPos = _moveFrom + ((_moveTo - _moveFrom) * (PositionFunc(_moveTime / _moveDuration)));
-                    gameObject.transform.localPosition = new Vector3(tmpPos.x, -tmpPos.y - 1, 0);
+                    gameObject.transform.localPosition = new Vector3(
+                        tmpPos.x,
+                        -tmpPos.y - 1,
+                        gameObject.transform.localPosition.z);
                 }
             }
         }
@@ -186,11 +189,11 @@ namespace Entities
             set
             {
                 _z = value;
-                var r = gameObject.GetComponent<SpriteRenderer>();
-                if (r)
-                {
-                    r.sortingOrder = value;
-                }
+                var currentPos = gameObject.transform.localPosition;
+                gameObject.transform.localPosition = new Vector3(
+                    currentPos.x,
+                    currentPos.y,
+                    value / 1000f);
             }
         }
 
@@ -240,7 +243,6 @@ namespace Entities
 
             List<Entity> oldStack = map.stacks[y][x];
             List<Entity> newStack = map.stacks[to.y][to.x];
-            z = newStack.Count == 0 ? 0 : newStack.First().z + 1;
 
             oldStack.Remove(this);
             int newStackPosition = 0;
@@ -339,15 +341,5 @@ namespace Entities
             }
         }
         */
-
-        public void Refresh()
-        {
-            var modComp = gameObject.GetComponent<TileMod>();
-            if (modComp)
-            {
-                var map = gameObject.GetComponentInParent<Map>();
-                modComp.ApplyMod(map.CollectNeighborsByte(this, true));
-            }
-        }
     }
 }

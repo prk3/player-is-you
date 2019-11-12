@@ -81,10 +81,6 @@
     <Compile Include="Assets\Scripts\Traits\Win.cs" />
     <Compile Include="Assets\Scripts\Traits\You.cs" />
     <Compile Include="Assets\Scripts\Utils.cs" />
-    <None Include="Assets\Resources\Levels\2.txt" />
-    <None Include="Assets\Resources\Levels\1.txt" />
-    <None Include="Assets\Resources\Levels\3.txt" />
-    <None Include="Assets\Resources\Levels\0.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/home/przemek/DEV/player-is-you/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

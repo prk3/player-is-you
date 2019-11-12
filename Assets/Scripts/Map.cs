@@ -22,11 +22,14 @@ public class Map : MonoBehaviour
     void Start()
     {
         string levelFile = $"Levels/{levelId}";
-        TextAsset text = Resources.Load<TextAsset>(levelFile);
-        string[] lines = text.text.Split('\n');
+        byte[] levelArray = Resources.Load<TextAsset>(levelFile).bytes;
 
-        width = int.Parse(lines[0]);
-        height = int.Parse(lines[1]);
+        Debug.Assert(levelArray.Length >= 2);
+
+        width = levelArray[0];
+        height = levelArray[1];
+
+        Debug.Assert(levelArray.Length == width * height + 2);
 
         var mapBackground = GameObject.CreatePrimitive(PrimitiveType.Plane);
         mapBackground.name = "background";
@@ -50,7 +53,7 @@ public class Map : MonoBehaviour
             for (int x = 0; x < width; x++)
             {
                 stacks[y][x] = new List<Entity>(2); // entities rarely stack in more than 2
-                var id = int.Parse(lines[2].Substring((width * y + x) * 2, 2));
+                var id = levelArray[(y * width) + x + 2];
 
                 // we skip id 0, which encodes an empty tile
                 if (id == 0) continue;
@@ -222,6 +225,9 @@ public class Map : MonoBehaviour
         }
     }
 
+    /**
+     * Scans map for changes in rules and adds/removes trait behaviours.
+     */
     public void UpdateRules()
     {
         var newRules = ExtractRules();
@@ -258,35 +264,62 @@ public class Map : MonoBehaviour
         _prevRules = newRules;
     }
 
-    public void RefreshPositions(List<Vector2Int> positions)
+    /**
+     * Optimizes stacks at given positions and refreshes approximate mods.
+     */
+    public void RefreshStacks(List<Vector2Int> positions)
     {
-        var affectedTiles = new HashSet<(int, int)>();
+        var withNeighbours = new HashSet<Vector2Int>();
 
-        void TryAddPosition(Vector2Int pos)
+        void TryAddPosition(HashSet<Vector2Int> set, Vector2Int pos)
         {
-            if (IsValidSpot(pos)) affectedTiles.Add((pos.x, pos.y));
+            if (IsValidSpot(pos)) set.Add(pos);
         }
 
         foreach (var position in positions)
         {
-            TryAddPosition(position + Vector2Int.left   + Vector2Int.down);
-            TryAddPosition(position                     + Vector2Int.down);
-            TryAddPosition(position + Vector2Int.right  + Vector2Int.down);
+            TryAddPosition(withNeighbours, position + Vector2Int.left   + Vector2Int.down);
+            TryAddPosition(withNeighbours, position                     + Vector2Int.down);
+            TryAddPosition(withNeighbours, position + Vector2Int.right  + Vector2Int.down);
 
-            TryAddPosition(position + Vector2Int.left);
-            TryAddPosition(position);
-            TryAddPosition(position + Vector2Int.right);
+            TryAddPosition(withNeighbours, position + Vector2Int.left);
+            TryAddPosition(withNeighbours, position);
+            TryAddPosition(withNeighbours, position + Vector2Int.right);
 
-            TryAddPosition(position + Vector2Int.left   + Vector2Int.up);
-            TryAddPosition(position                     + Vector2Int.up);
-            TryAddPosition(position + Vector2Int.right  + Vector2Int.up);
+            TryAddPosition(withNeighbours, position + Vector2Int.left   + Vector2Int.up);
+            TryAddPosition(withNeighbours, position                     + Vector2Int.up);
+            TryAddPosition(withNeighbours, position + Vector2Int.right  + Vector2Int.up);
         }
 
-        foreach (var (x, y) in affectedTiles)
+        foreach (var pos in positions)
         {
-            foreach (var entity in stacks[y][x])
+            OptimizeStack(pos);
+        }
+
+        foreach (var pos in withNeighbours)
+        {
+            foreach (var entity in stacks[pos.y][pos.x])
             {
-                entity.Refresh();
+                var mod = entity.gameObject.GetComponent<TileMod>();
+                if (mod != null) {
+                    mod.ApplyMod(CollectNeighborsByte(entity, true));
+                }
+            }
+        }
+    }
+
+    /**
+     * Reapplies z value on entities based on their position in a stack.
+     */
+    private void OptimizeStack(Vector2Int pos)
+    {
+        Debug.Assert(IsValidSpot(pos));
+        var stack = stacks[pos.y][pos.x];
+        for (int i = 0; i < stack.Count; i++)
+        {
+            if (stack[i].z != i)
+            {
+                stack[i].z = i;
             }
         }
     }
@@ -311,7 +344,7 @@ public class Map : MonoBehaviour
         }
     }
 
-    public RuleApplicationOutcome ApplyRulesOnStack(List<Entity> stack)
+    private RuleApplicationOutcome ApplyRulesOnStack(List<Entity> stack)
     {
         var traitOrderPairs = new List<(int, Trait)>();
 
