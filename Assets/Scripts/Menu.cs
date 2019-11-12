@@ -23,7 +23,7 @@ public class Menu : MonoBehaviour
     private List<Item> _items = new List<Item>();
     private List<float> _widths = new List<float>();
     private int _selectedItem;
-    
+
     void Start()
     {
         _transition = gameObject.GetComponent<StateTransition>() ?? gameObject.GetComponentInParent<StateTransition>();
@@ -76,7 +76,7 @@ public class Menu : MonoBehaviour
                 {
                     _selectedItem = (_items.Count + _selectedItem - 1) % _items.Count;
                 } while (_selectedItem != oldItem && _items[_selectedItem].Locked);
-                
+
                 MoveArrow(_selectedItem);
             }
             else if (Input.GetKeyDown(KeyCode.DownArrow) || Input.GetKeyDown(KeyCode.S))
@@ -87,17 +87,18 @@ public class Menu : MonoBehaviour
                 {
                     _selectedItem = (_selectedItem + 1) % _items.Count;
                 } while (_selectedItem != oldItem && _items[_selectedItem].Locked);
-                
+
                 MoveArrow(_selectedItem);
             }
             else if (Input.GetKeyDown(KeyCode.Return) || Input.GetKeyDown(KeyCode.Space))
             {
+                AudioPlayer.PlaySound("select");
                 var action = _items[_selectedItem].Action;
                 action();
             }
         }
     }
-    
+
     public void AddItem(string text, Action d, bool locked = false)
     {
         _items.Add(new Item(text, d, locked));

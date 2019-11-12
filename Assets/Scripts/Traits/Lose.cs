@@ -41,6 +41,7 @@ namespace Traits
                 bool entityIsFloating = entity.GetComponent<Float>() != null;
                 if (thisEntityIsFloating == entityIsFloating && entity.GetComponent<You>() != null)
                 {
+                    AudioPlayer.PlaySound("lose");
                     gameObject.GetComponentInParent<Gameplay>().Lose();
                     return RuleApplicationOutcome.Break;
                 }

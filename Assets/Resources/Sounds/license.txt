@@ -1,0 +1,10 @@
+background theme:
+yellow by cyba (c) copyright 2019 Licensed under a Creative Commons Attribution Noncommercial  (3.0) license. http://dig.ccmixter.org/files/cyba/60166
+ 
+sound effects:
+pause: https://www.zapsplat.com/sound-effect-category/shake-and-flutter/
+select: https://www.zapsplat.com/music/cartoon-blink-flutter-or-shake-1/
+sink: https://www.zapsplat.com/music/cartoon-bubble-popping-or-other-pop-5/
+push: https://www.zapsplat.com/music/metal-crowbar-swing-in-air-whoosh-14/
+lose: https://www.zapsplat.com/music/cartoon-descend-fast-marimba/
+win: https://www.zapsplat.com/music/cartoon-climb-up-ladder-or-steps-ascend-fast-cute-5/

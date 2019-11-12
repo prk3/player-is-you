@@ -275,7 +275,6 @@ namespace Entities
             x = to.x;
             y = to.y;
             AnimateMove(thisPos, to);
-            map.UpdateRules();
         }
 
         /*

@@ -13,7 +13,7 @@ namespace States
         private bool _redirecting;
         private float _redirectingTime;
         private float _redirectingDuration = 3f;
-        
+
         void Start()
         {
             _transition = gameObject.AddComponent<StateTransition>();
@@ -29,11 +29,11 @@ namespace States
             _overlay.transform.parent = gameObject.transform;
             _overlay.transform.localPosition = new Vector3(0, 0, -1);
             _overlay.transform.localScale = new Vector3(3, 1, 3);
-        
+
             var rotation = _overlay.transform.localRotation.eulerAngles;
             rotation.x = -90;
             _overlay.transform.localRotation = Quaternion.Euler(rotation);
-        
+
             _overlay.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 0.5f);
             _overlay.GetComponent<MeshRenderer>().material.shader = Shader.Find("UI/Default");
 
@@ -95,8 +95,8 @@ namespace States
         {
             _paused = true;
             _overlay.SetActive(true);
-            
-            var lose = new GameObject("win");
+
+            var lose = new GameObject("lose");
             lose.transform.parent = gameObject.transform;
             lose.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
 
@@ -123,7 +123,7 @@ namespace States
                     unlockedLevels.Substring(GameStore.Level + 2));
                 PlayerPrefs.Save();
             }
-            
+
             var win = new GameObject("win");
             win.transform.parent = gameObject.transform;
             win.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
@@ -142,6 +142,7 @@ namespace States
             _paused = true;
             _overlay.SetActive(true);
             _menu.SetActive(true);
+            AudioPlayer.PlaySound("pause");
         }
 
         private void CloseQuickMenu()

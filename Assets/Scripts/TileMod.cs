@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Entities;
 using UnityEngine;
 
@@ -291,10 +292,12 @@ public class TileMod : MonoBehaviour
         (6 << 4) + 5, // 255
     };
 
+    private static Dictionary<(ulong, ulong), Texture2D> _modCache;
+
     /**
      * Returns (x, y) of tile mod in mod tileset based on tile surroundings (neighbors).
      */
-    public static Vector2Int GetModPositionFromNeighbors(byte neighbors)
+    private static Vector2Int GetModPositionFromNeighbors(byte neighbors)
     {
         byte el = ModPositions[neighbors];
 
@@ -310,6 +313,18 @@ public class TileMod : MonoBehaviour
      */
     public static Texture2D MakeModdedTexture(Texture2D source, Vector2Int sourcePosition, Texture2D mod, Vector2Int modPosition, Vector2Int size)
     {
+        var modId = (
+            ((ulong) source.GetHashCode() << 32) + (ulong) mod.GetHashCode(),
+            ((ulong) sourcePosition.x << 48) +
+            ((ulong) sourcePosition.y << 32) +
+            ((ulong) modPosition.x << 16) +
+            ((ulong) modPosition.y));
+
+        if (_modCache.ContainsKey(modId))
+        {
+            return _modCache[modId];
+        }
+
         // texture pixels are laid out left-to-right, bottom-to-top
         // yes, bottom-to-top (Oo)
 
@@ -337,7 +352,13 @@ public class TileMod : MonoBehaviour
         Texture2D newTexture = new Texture2D(size.x, size.y);
         newTexture.SetPixels32(newPixels);
         newTexture.Apply();
+        _modCache.Add(modId, newTexture);
         return newTexture;
+    }
+
+    public static void ClearModCache()
+    {
+        _modCache = new Dictionary<(ulong, ulong), Texture2D>();
     }
 
     public Texture2D modTilemap;
@@ -349,6 +370,11 @@ public class TileMod : MonoBehaviour
         var entity = gameObject.GetComponent<Entity>();
         var map = gameObject.GetComponentInParent<Map>();
         ApplyMod(map.CollectNeighborsByte(entity, true));
+
+        if (_modCache == null)
+        {
+            _modCache = new Dictionary<(ulong, ulong), Texture2D>();
+        }
     }
 
     public void ApplyMod(byte neighbors)

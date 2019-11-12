@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 
 namespace States
@@ -7,7 +6,7 @@ namespace States
     {
         private StateTransition _transition;
         public string defaultUnlockedLevels = "1000";
-        
+
         void Awake()
         {
             if (!PlayerPrefs.HasKey("unlocked_levels"))
@@ -16,9 +15,13 @@ namespace States
                 PlayerPrefs.Save();
             }
         }
-        
+
         void Start()
         {
+            var player = new GameObject("player");
+            DontDestroyOnLoad(player);
+            player.AddComponent<AudioPlayer>();
+
             _transition = gameObject.AddComponent<StateTransition>();
 
             var title = new GameObject("title");
@@ -36,7 +39,7 @@ namespace States
             menuComp.AddItem("Play", () => _transition.TransitionTo("LevelSelectMenu"));
             menuComp.AddItem("Quit", () => Application.Quit());
         }
-        
+
         private void Update()
         {
             if (_transition.IsStateActive())
@@ -48,6 +51,7 @@ namespace States
                     {
                         PlayerPrefs.SetString("unlocked_levels", defaultUnlockedLevels);
                         PlayerPrefs.Save();
+                        AudioPlayer.PlaySound("push");
                     }
                 }
             }

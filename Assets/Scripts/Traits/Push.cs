@@ -22,6 +22,7 @@ namespace Traits
         {
             Entity thisEntity = gameObject.GetComponent<Entity>();
             thisEntity.MoveTo(dir, registerMove);
+            AudioPlayer.PlaySound("push");
 
             return OnEnterOutcome.Break;
         }

@@ -37,6 +37,7 @@ namespace Traits
                     stack.Remove(thisEntity);
                     Destroy(thisEntity.gameObject);
                     map.RefreshStacks(new List<Vector2Int> { new Vector2Int(thisEntity.x, thisEntity.y)});
+                    AudioPlayer.PlaySound("sink");
                     return RuleApplicationOutcome.Refresh;
                 }
             }

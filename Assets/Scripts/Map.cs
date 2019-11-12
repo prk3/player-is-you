@@ -21,6 +21,9 @@ public class Map : MonoBehaviour
 
     void Start()
     {
+        // clear mod cache so that we don't use too much memory
+        TileMod.ClearModCache();
+
         string levelFile = $"Levels/{levelId}";
         byte[] levelArray = Resources.Load<TextAsset>(levelFile).bytes;
 
