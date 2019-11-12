@@ -1,5 +1,8 @@
 ﻿using UnityEngine;
 
+/**
+ * Changes vertical offset of a texture rect on an interval.
+ */
 public class AnimatedSprite : MonoBehaviour
 {
     public int numberOfSprites = 4;
@@ -46,12 +49,18 @@ public class AnimatedSprite : MonoBehaviour
         }
     }
 
+    /**
+     * Moves to next (or first) position in a texture.
+     */
     private void NextSprite()
     {
         _currentSpriteIndex = _currentSpriteIndex >= numberOfSprites - 1 ? 0 : _currentSpriteIndex + 1;
         gameObject.GetComponent<SpriteRenderer>().sprite = _spritesModed[_currentSpriteIndex];
     }
 
+    /**
+     * Applied mod to all versions of an animated sprite.
+     */
     public void Mod(Texture2D mod, Vector2Int modPosition)
     {
         Vector2Int size = new Vector2Int((int)_sprites[0].textureRect.width, (int)_sprites[0].textureRect.height);
@@ -66,7 +75,7 @@ public class AnimatedSprite : MonoBehaviour
                 size);
 
             newTexture.filterMode = _sprites[i].texture.filterMode;
-            
+
             _spritesModed[i] = Sprite.Create(
                 newTexture,
                 new Rect(0, 0, size.x, size.y),

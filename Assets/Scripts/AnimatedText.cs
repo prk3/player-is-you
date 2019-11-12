@@ -2,11 +2,17 @@
 using System.Linq;
 using UnityEngine;
 
+/**
+ * Text alignment relative to game object position.
+ */
 public enum Align
 {
     Left, Right, Center
 }
 
+/**
+ * Renders text by putting character sprites together.
+ */
 public class AnimatedText : MonoBehaviour
 {
     public string text = "";
@@ -14,7 +20,7 @@ public class AnimatedText : MonoBehaviour
     public Color color = Color.white;
 
     private float _cachedWidth;
-    
+
     private void Start()
     {
         float offset = 0.0f;
@@ -28,7 +34,7 @@ public class AnimatedText : MonoBehaviour
         {
             startX = GetWidth() * -1.0f;
         }
-        
+
         foreach (var c in text)
         {
             if (c == ' ')
@@ -36,16 +42,16 @@ public class AnimatedText : MonoBehaviour
                 offset += 20.0f / 32.0f;
                 continue;
             }
-            
+
             var (position, width) = Alphabet.PositionAndWidthOf(c) ?? Alphabet.PositionAndWidthOf('?');
-            
+
             var obj = new GameObject("char");
             obj.gameObject.transform.parent = gameObject.transform;
             obj.gameObject.transform.localPosition = new Vector3(startX + offset, -1, 0);
             obj.gameObject.transform.localScale = Vector3.one;
-            
+
             var ren = obj.AddComponent<SpriteRenderer>();
-            
+
             ren.sprite = Sprite.Create(
                 Alphabet.GetTexture(),
                 new Rect(position, 0, width, 32),
@@ -61,6 +67,9 @@ public class AnimatedText : MonoBehaviour
         }
     }
 
+    /**
+     * Returns total width of a string in game units.
+     */
     public float GetWidth()
     {
         if (_cachedWidth == 0.0f)

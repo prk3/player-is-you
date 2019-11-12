@@ -5,6 +5,8 @@ namespace States
     public class StartMenu : MonoBehaviour
     {
         private StateTransition _transition;
+
+        // ltr string with level progress - 1 indicates unlocked level, 0 - locked
         public string defaultUnlockedLevels = "1000";
 
         void Awake()

@@ -17,6 +17,7 @@ namespace Entities
     public enum EntityType
     {
         // decoration blocks
+        // they are not used in code because I cast int to EntityType
         DecorationBush = 1,
         DecorationTile,
         DecorationUnknown,
@@ -52,11 +53,20 @@ namespace Entities
         TraitFloat,
     }
 
+    /**
+     * Entity on game map. We could make this class extendable in the future,
+     * so that different entity types can e.g. render differently.
+     */
     public class Entity : MonoBehaviour
     {
-        // will be initialized in Awake
+        /*
+         * Texture used by entities, shared across all entity instances.
+         */
         private static Texture2D _texture;
 
+        /*
+         * Turns rule's subject into a entity type that is affected.
+         */
         private static readonly Dictionary<EntityType, EntityType> SubjectToEntityMap = new Dictionary<EntityType,EntityType>
         {
             { EntityType.SubjectPlayer, EntityType.Player },
@@ -68,6 +78,9 @@ namespace Entities
             { EntityType.SubjectCloud,  EntityType.Cloud }
         };
 
+        /**
+         * Turns rule's traits into a entity type that is affected.
+         */
         private static readonly Dictionary<EntityType, Type> TraitToBehaviorMap = new Dictionary<EntityType, Type>
         {
             { EntityType.TraitYou, typeof(You) },
@@ -126,11 +139,13 @@ namespace Entities
             return TraitToBehaviorMap[t];
         }
 
-        private EntityType _type;
+        public EntityType type; //can be set once, before update
         public int x;
         public int y;
         private int _z;
 
+
+        // used by move method
         private bool _moving;
         private Vector2 _moveFrom;
         private Vector2 _moveTo;
@@ -157,7 +172,7 @@ namespace Entities
 
         void Start()
         {
-            gameObject.transform.localPosition = new Vector3(x, -y - 1, 0);
+            gameObject.transform.localPosition = new Vector3(x, -y - 1, _z);
         }
 
         void Update()
@@ -197,16 +212,9 @@ namespace Entities
             }
         }
 
-        public EntityType GetEntityType()
-        {
-            return _type;
-        }
-
-        public void SetEntityType(EntityType type)
-        {
-            _type = type;
-        }
-
+        /*
+         * Animates entity's position.
+         */
         public void AnimateMove(Vector2Int from, Vector2Int to, float time = 0.18f)
         {
             _moveFrom = from;
@@ -216,11 +224,17 @@ namespace Entities
             _moving = true;
         }
 
+        /**
+         * Whether entity's position is still animated.
+         */
         public bool IsMoving()
         {
             return _moving;
         }
 
+        /**
+         * Whether entity can be moved into a given direction.
+         */
         public bool CanMoveTo(MoveDirection dir)
         {
             Map map = gameObject.GetComponentInParent<Map>();
@@ -235,6 +249,9 @@ namespace Entities
                     trait => trait.CanEnter(this, dir)));
         }
 
+        /**
+         * Moves entity in the given direction. Assumes that entity can be moved (@see CanMoveTo).
+         */
         public void MoveTo(MoveDirection dir, Action<Entity> registerMove)
         {
             Map map = gameObject.GetComponentInParent<Map>();
@@ -276,69 +293,5 @@ namespace Entities
             y = to.y;
             AnimateMove(thisPos, to);
         }
-
-        /*
-        public void AfterMoveEarly()
-        {
-            Map map = gameObject.GetComponentInParent<Map>();
-
-            List<Entity> stack = map.stacks[y][x];
-
-            int pos = stack.FindIndex(entity => entity == this);
-
-            if (pos >= 0)
-            {
-                for (int i = pos + 1; i < stack.Count; i++)
-                {
-                    var entity = stack[i];
-                    foreach (var trait in entity.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
-                    {
-                        var outcome = trait.AfterEnterEarly();
-                        switch (outcome)
-                        {
-                            case AfterEnterOutcome.Break:
-                                goto afterEntityLoop;
-                            case AfterEnterOutcome.Continue:
-                                break;
-                        }
-                    }
-                    afterTraitLoop: ;
-                }
-                afterEntityLoop: ;
-            }
-        }
-        */
-
-        /*
-        public void AfterMoveLate()
-        {
-            Map map = gameObject.GetComponentInParent<Map>();
-
-            List<Entity> stack = map.stacks[y][x];
-
-            int pos = stack.FindIndex(entity => entity == this);
-
-            if (pos >= 0)
-            {
-                for (int i = pos + 1; i < stack.Count; i++)
-                {
-                    var entity = stack[i];
-                    foreach (var trait in entity.GetComponents<Trait>().OrderByDescending(t => t.GetInteractionOrder()))
-                    {
-                        var outcome = trait.AfterEnterLate();
-                        switch (outcome)
-                        {
-                            case AfterEnterOutcome.Break:
-                                goto afterEntityLoop;
-                            case AfterEnterOutcome.Continue:
-                                break;
-                        }
-                    }
-                    afterTraitLoop: ;
-                }
-                afterEntityLoop: ;
-            }
-        }
-        */
     }
 }

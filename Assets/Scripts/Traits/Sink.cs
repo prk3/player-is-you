@@ -13,14 +13,9 @@ namespace Traits
             return 300;
         }
 
-        /*
-        public override OnEnterOutcome OnEnter(Entity entering, MoveDirection dir, Action<Entity> registerMove)
-        {
-            Destroy(entering.gameObject);
-            return OnEnterOutcome.Break;
-        }
-        */
-
+        /**
+         * If stack has other entities with the same float layer, removes self and those entities.
+         */
         public override RuleApplicationOutcome ApplyRuleOnStack(List<Entity> stack)
         {
             Entity thisEntity = gameObject.GetComponent<Entity>();

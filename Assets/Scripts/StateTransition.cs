@@ -2,35 +2,25 @@ using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+/**
+ * Shows animation before entering/leaving a game state.
+ */
 public class StateTransition : MonoBehaviour
 {
     private GameObject _circle;
     private bool _stateActive;
-    
+
     private float _time;
     private const float TransitionDuration = 0.7f;
     private bool _fadingIn = true;
     private bool _fadingOut;
     private string _targetScene;
 
-    public void TransitionTo(string sceneName)
-    {
-        _time = 0;
-        _fadingOut = true;
-        _targetScene = sceneName;
-        _stateActive = false;
-    }
-
-    public bool IsStateActive()
-    {
-        return _stateActive;
-    }
-
     void Start()
     {
         _circle = new GameObject("transition circle");
         _circle.transform.parent = gameObject.transform;
-        
+
         var texture = Resources.Load<Texture2D>("Textures/circle");
         texture.filterMode = FilterMode.Point;
 
@@ -77,6 +67,29 @@ public class StateTransition : MonoBehaviour
         }
     }
 
+    /**
+     * Calling this method starts transition.
+     */
+    public void TransitionTo(string sceneName)
+    {
+        _time = 0;
+        _fadingOut = true;
+        _targetScene = sceneName;
+        _stateActive = false;
+    }
+
+    /**
+     * Whether transition has ended. Useful for canceling input on game element.
+     */
+    public bool IsStateActive()
+    {
+        return _stateActive;
+    }
+
+
+    /**
+     * Calculates the maximum scale of the animated circle based on screen size.
+     */
     private float CalcCircleMaxScale()
     {
         var screenSize = Utils.GetScreenSize();

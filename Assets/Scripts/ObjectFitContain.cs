@@ -13,6 +13,10 @@ public class ObjectFitContain : MonoBehaviour
     private float _prevItemWidth;
     private float _prevItemHeight;
 
+    /**
+     * Positions and scales game object according to object-fit-contain rules.
+     * Returns true if changes were applied (false when window size and object size did not change).
+     */
     public bool Contain(float itemWidth, float itemHeight)
     {
         var screenSizePx = Utils.GetScreenSizePx();
@@ -27,7 +31,7 @@ public class ObjectFitContain : MonoBehaviour
         }
 
         var screenSize = Utils.GetScreenSize();
-    
+
         var screenRatio = screenSize.x / screenSize.y;
         var itemRatio = itemWidth / itemHeight;
 

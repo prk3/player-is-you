@@ -6,8 +6,8 @@ using UnityEngine;
 using Traits;
 
 /**
- * Loads map from level_.txt file, renders tiles, parses and applies rules.
- * IMPORTANT: tiles exist in a plane where Y axis grows downwards (like in images)
+ * Loads map from level_.bytes file, renders tiles, parses and applies rules.
+ * IMPORTANT: tiles exist in a plane where Y axis grows downwards (like in images).
  */
 public class Map : MonoBehaviour
 {
@@ -94,13 +94,16 @@ public class Map : MonoBehaviour
         }
     }
 
+    /**
+     * Creates an entity with position x, y and type "type".
+     */
     private GameObject MakeEntityObject(int x, int y, EntityType type)
     {
         var obj = new GameObject("entity");
         obj.transform.parent = gameObject.transform;
 
         var entity = obj.AddComponent<Entity>();
-        entity.SetEntityType(type);
+        entity.type = type;
         entity.x = x;
         entity.y = y;
         entity.z = 0;
@@ -130,20 +133,25 @@ public class Map : MonoBehaviour
         return obj;
     }
 
+    /**
+     * Whether a position is withing map's bounding box.
+     */
     public bool IsValidSpot(Vector2Int pos)
     {
         return pos.x >= 0 && pos.x < width && pos.y >= 0 && pos.y < height;
     }
 
+    /**
+     * Given an entity, collect neighbours around that entity.
+     * If neighbour position is out of bounds, use bitFroMissingNeighbours instead.
+     * See TileMod for neighbour-bit relation info.
+     */
     public byte CollectNeighborsByte(Entity e, bool bitForMissingNeighbors = false)
     {
-
-        EntityType type = e.GetEntityType();
-
         bool CollectStack(int x, int y)
         {
             if (!IsValidSpot(new Vector2Int(x, y))) return bitForMissingNeighbors;
-            return stacks[y][x].Find(entity => entity.GetEntityType() == type);
+            return stacks[y][x].Find(entity => entity.type == e.type);
         }
 
         byte output = 0;
@@ -163,6 +171,9 @@ public class Map : MonoBehaviour
         return output;
     }
 
+    /**
+     * Extracts all rules from the map.
+     */
     private List<(EntityType, EntityType)> ExtractRules()
     {
         var output = new List<(EntityType, EntityType)>();
@@ -173,7 +184,7 @@ public class Map : MonoBehaviour
             {
                 foreach (Entity entity in stack)
                 {
-                    if (entity.GetEntityType() == EntityType.ConnectorIs)
+                    if (entity.type == EntityType.ConnectorIs)
                     {
                         ExtractRulesFromConnectorIs(entity, output);
                     }
@@ -184,34 +195,40 @@ public class Map : MonoBehaviour
         return output;
     }
 
+    /**
+     * Extracts rules with a center on "is connector" entity.
+     */
     private void ExtractRulesFromConnectorIs(Entity entity, List<(EntityType, EntityType)> list)
     {
         // is connector can be a part of a vertical rule
         if (entity.y != 0 && entity.y != height - 1)
         {
-            ExtractRulesFromSpots(stacks[entity.y - 1][entity.x], stacks[entity.y + 1][entity.x], list);
+            ExtractRulesFromStacks(stacks[entity.y - 1][entity.x], stacks[entity.y + 1][entity.x], list);
         }
 
         // is connector can be a part of a horizontal rule
         if (entity.x != 0 && entity.x != width - 1)
         {
-            ExtractRulesFromSpots(stacks[entity.y][entity.x - 1], stacks[entity.y][entity.x + 1], list);
+            ExtractRulesFromStacks(stacks[entity.y][entity.x - 1], stacks[entity.y][entity.x + 1], list);
         }
     }
 
-    private void ExtractRulesFromSpots(List<Entity> primaryStack, List<Entity> secondaryStack, List<(EntityType, EntityType)> list)
+    /**
+     * Adds rules from stacks one and two into list.
+     */
+    private void ExtractRulesFromStacks(List<Entity> stackOne, List<Entity> stackTwo, List<(EntityType, EntityType)> list)
     {
-        foreach (var primary in primaryStack)
+        foreach (var primary in stackOne)
         {
-            var primaryType = primary.GetEntityType();
+            var primaryType = primary.type;
             var isPrimarySubject = Entity.IsSubject(primaryType);
             var isPrimaryTrait = Entity.IsTrait(primaryType);
 
             if (!isPrimarySubject && !isPrimaryTrait) continue;
 
-            foreach (var secondary in secondaryStack)
+            foreach (var secondary in stackTwo)
             {
-                var secondaryType = secondary.GetEntityType();
+                var secondaryType = secondary.type;
                 var isSecondarySubject = Entity.IsSubject(secondaryType);
                 var isSecondaryTrait = Entity.IsTrait(secondaryType);
 
@@ -244,7 +261,7 @@ public class Map : MonoBehaviour
 
             foreach (var s in entities)
             {
-                if (s.GetEntityType() != targetType) continue;
+                if (s.type != targetType) continue;
 
                 var component = s.gameObject.GetComponent(Entity.GetBehaviorFromTrait(trait));
                 if (component) Destroy(component);
@@ -258,7 +275,7 @@ public class Map : MonoBehaviour
 
             foreach (var entity in entities)
             {
-                if (entity.GetEntityType() != targetType) continue;
+                if (entity.type != targetType) continue;
 
                 entity.gameObject.AddComponent(Entity.GetBehaviorFromTrait(trait));
             }
@@ -327,6 +344,9 @@ public class Map : MonoBehaviour
         }
     }
 
+    /**
+     * Executes trait logic on an entire map.
+     */
     public void ApplyRules() {
         for (int y = 0; y < height; y++)
         {
@@ -347,6 +367,9 @@ public class Map : MonoBehaviour
         }
     }
 
+    /**
+     * Applies trait login on one stack.
+     */
     private RuleApplicationOutcome ApplyRulesOnStack(List<Entity> stack)
     {
         var traitOrderPairs = new List<(int, Trait)>();

@@ -8,7 +8,7 @@
       <e p="Assets" t="Include">
         <e p="Resources" t="Include">
           <e p="Sounds" t="Include">
-            <e p="license.txt" t="Include" />
+            <e p="licenses.txt" t="Include" />
           </e>
         </e>
         <e p="Scripts" t="Include">

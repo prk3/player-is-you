@@ -10,6 +10,7 @@ namespace States
         private GameObject _menu;
         private GameObject _lose;
 
+        // timing members used for delay after won/lost message
         private bool _redirecting;
         private float _redirectingTime;
         private float _redirectingDuration = 3f;
@@ -76,21 +77,33 @@ namespace States
             }
         }
 
+        /**
+         * Whether user in in control of the map.
+         */
         public bool IsPlaying()
         {
             return !_paused;
         }
 
+        /**
+         * Restarts currently shown level.
+         */
         public void Restart()
         {
             _transition.TransitionTo("Gameplay");
         }
 
+        /**
+         * Exit to start menu.
+         */
         private void Exit()
         {
             _transition.TransitionTo("StartMenu");
         }
 
+        /**
+         * Show lose message and redirect to level select menu.
+         */
         public void Lose()
         {
             _paused = true;
@@ -109,6 +122,9 @@ namespace States
             _redirectingTime = 0;
         }
 
+        /**
+         * Show won message and redirect to level select menu (if possible puts arrow on next level).
+         */
         public void Win()
         {
             _paused = true;

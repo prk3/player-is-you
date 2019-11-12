@@ -1,13 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
+/**
+ * Holds info needed to render animated text.
+ */
 public class Alphabet
 {
     /**
      * Holds alphabet texture. Will be initialized in GetTexture.
      */
     private static Texture2D _texture;
-    
+
     /**
      * Array mapping ascii codes to character positions and widths.
      * First 32 characters are skipped (control codes should not be shown anyways).
@@ -114,7 +117,7 @@ public class Alphabet
         0, // ~
         0, // DEL
     };
-    
+
     /*
      * Returns alphabet texture.
      */

@@ -3,8 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions;
 
+/**
+ * Renders a menu with a selection arrow.
+ */
 public class Menu : MonoBehaviour
 {
+    /**
+     * Internal structure holding menu item data.
+     */
     private struct Item
     {
         public readonly string Title;
@@ -99,11 +105,17 @@ public class Menu : MonoBehaviour
         }
     }
 
+    /**
+     * Adds item to menu. Works only before initial render.
+     */
     public void AddItem(string text, Action d, bool locked = false)
     {
         _items.Add(new Item(text, d, locked));
     }
 
+    /**
+     * Puts arrow on position "index". Works only before initial render.
+     */
     public void SelectItem(int index)
     {
         Debug.Assert(index >= 0);
@@ -112,6 +124,9 @@ public class Menu : MonoBehaviour
         _selectedItem = index;
     }
 
+    /**
+     * Moves arrow to element "index".
+     */
     void MoveArrow(int index)
     {
          _arrow.transform.localPosition = new Vector3(

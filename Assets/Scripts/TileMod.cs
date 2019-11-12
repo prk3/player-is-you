@@ -2,6 +2,11 @@ using System.Collections.Generic;
 using Entities;
 using UnityEngine;
 
+/**
+ * Behaviour adding mods (edges/blobs/bitmasking) to game entities.
+ * Credits for a very good explanation:
+ * https://gamedevelopment.tutsplus.com/tutorials/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673
+ */
 public class TileMod : MonoBehaviour
 {
     /**
@@ -10,6 +15,7 @@ public class TileMod : MonoBehaviour
      * [ 1 ] [ 2 ] [ 4 ]
      * [ 8 ]       [ 16]
      * [ 32] [ 64] [128]
+     * This array could be easily optimised: annotations below describe repeating sequences of integers.
      */
     private static readonly byte[] ModPositions =
     {
@@ -292,6 +298,9 @@ public class TileMod : MonoBehaviour
         (6 << 4) + 5, // 255
     };
 
+    /**
+     * Hash map storing already computed textures. It speeds up map updates DRAMATICALLY.
+     */
     private static Dictionary<(ulong, ulong), Texture2D> _modCache;
 
     /**
@@ -313,6 +322,7 @@ public class TileMod : MonoBehaviour
      */
     public static Texture2D MakeModdedTexture(Texture2D source, Vector2Int sourcePosition, Texture2D mod, Vector2Int modPosition, Vector2Int size)
     {
+        // calculate mod hash to see if it has been generated before
         var modId = (
             ((ulong) source.GetHashCode() << 32) + (ulong) mod.GetHashCode(),
             ((ulong) sourcePosition.x << 48) +
@@ -356,6 +366,9 @@ public class TileMod : MonoBehaviour
         return newTexture;
     }
 
+    /**
+     * Resets mod map. You can call it when a map changes to save memory.
+     */
     public static void ClearModCache()
     {
         _modCache = new Dictionary<(ulong, ulong), Texture2D>();
@@ -377,6 +390,10 @@ public class TileMod : MonoBehaviour
         }
     }
 
+    /**
+     * Applies mod on game object. If object has animated texture, mod applying is handled by that component.
+     * Objects with sprite renderer are updated in this function.
+     */
     public void ApplyMod(byte neighbors)
     {
         // if gameObject has AnimatedSprite component, let it handle mod applying

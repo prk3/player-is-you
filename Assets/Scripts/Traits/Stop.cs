@@ -9,6 +9,9 @@ namespace Traits
             return 600;
         }
 
+        /**
+         * Can't walk onto this entity, even when float.
+         */
         public override bool CanEnter(Entity initiator, MoveDirection dir)
         {
             return false;

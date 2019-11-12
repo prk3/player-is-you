@@ -11,27 +11,10 @@ namespace Traits
             return 100;
         }
 
-        /*
-        public override AfterEnterOutcome AfterEnterLate()
-        {
-            var map = gameObject.GetComponentInParent<Map>();
-            var thisEntity = gameObject.GetComponent<Entity>();
-
-            var stack = map.stacks[thisEntity.y][thisEntity.x];
-
-            foreach (var entity in stack)
-            {
-                if (entity.gameObject.GetComponent<You>())
-                {
-                    gameObject.GetComponentInParent<Gameplay>().Win();
-                    return AfterEnterOutcome.Break;
-                }
-            }
-
-            return AfterEnterOutcome.Continue;
-        }
-        */
-
+        /**
+         * Checks if YOU is on the same stack and float layer.
+         * If so, loses the game.
+         */
         public override RuleApplicationOutcome ApplyRuleOnStack(List<Entity> stack)
         {
             bool thisEntityIsFloating = gameObject.GetComponent<Float>() != null;

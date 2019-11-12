@@ -20,7 +20,9 @@ namespace Traits
             _entity = gameObject.GetComponent<Entity>();
         }
 
-        // Update is called once per frame
+        /**
+         * Checks keyboard input and calls TryMove if necessary.
+         */
         void Update()
         {
             CheckMoveEnd();
@@ -61,6 +63,9 @@ namespace Traits
             return 100;
         }
 
+        /**
+         * Tries moving entity if that's possible.
+         */
         private void TryMove(MoveDirection dir)
         {
             var thisEntity = gameObject.GetComponent<Entity>();
@@ -90,6 +95,9 @@ namespace Traits
             }
         }
 
+        /**
+         * Executed on every update, updates map when all moved blocks stop moving.
+         */
         private void CheckMoveEnd()
         {
             if (_movedEntities == null) return;

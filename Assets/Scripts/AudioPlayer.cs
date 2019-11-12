@@ -1,7 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
+/**
+ * Utility (and behaviour) for playing sounds in a game. Plays background audio track in loop.
+ */
 public class AudioPlayer : MonoBehaviour
 {
     private static HashSet<string> _playQueue;
@@ -12,6 +14,7 @@ public class AudioPlayer : MonoBehaviour
     {
         if (_sounds == null)
         {
+            // we load all clips at the start to avoid lag
             _sounds = new Dictionary<string, AudioClip>
             {
                 {"background", Resources.Load<AudioClip>("Sounds/cyba_yellow")},
@@ -56,6 +59,9 @@ public class AudioPlayer : MonoBehaviour
         }
     }
 
+    /**
+     * Adds a play request to the queue. Multiple requests of the same sound are squashed into one request.
+     */
     public static void PlaySound(string name)
     {
         _playQueue.Add(name);
