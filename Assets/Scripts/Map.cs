@@ -45,8 +45,7 @@ public class Map : MonoBehaviour
         rotation.x = -90;
         mapBackground.transform.localRotation = Quaternion.Euler(rotation);
 
-        mapBackground.GetComponent<MeshRenderer>().material.color = new Color(0.08f, 0.08f, 0.08f, 1f);
-        mapBackground.GetComponent<MeshRenderer>().material.shader = Shader.Find("UI/Default");
+        mapBackground.GetComponent<MeshRenderer>().material = Resources.Load<Material>("map_background");
 
         stacks = new List<Entity>[height][];
 

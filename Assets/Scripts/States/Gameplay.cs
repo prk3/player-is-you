@@ -35,8 +35,7 @@ namespace States
             rotation.x = -90;
             _overlay.transform.localRotation = Quaternion.Euler(rotation);
 
-            _overlay.GetComponent<MeshRenderer>().material.color = new Color(0, 0, 0, 0.5f);
-            _overlay.GetComponent<MeshRenderer>().material.shader = Shader.Find("UI/Default");
+            _overlay.GetComponent<MeshRenderer>().material = Resources.Load<Material>("pause_menu_overlay");
 
             _menu = new GameObject("quick menu");
             _menu.SetActive(false);

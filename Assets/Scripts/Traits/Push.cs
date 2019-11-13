@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using Entities;
-using UnityEngine;
 
 namespace Traits
 {
