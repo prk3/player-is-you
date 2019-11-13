@@ -82,7 +82,7 @@
     <Compile Include="Assets\Scripts\Traits\Win.cs" />
     <Compile Include="Assets\Scripts\Traits\You.cs" />
     <Compile Include="Assets\Scripts\Utils.cs" />
-    <None Include="Assets\Resources\Sounds\licenses.txt" />
+    <None Include="Assets\licenses.txt" />
     <Reference Include="Unity.Timeline.Editor">
       <HintPath>/home/przemek/DEV/player-is-you/Library/ScriptAssemblies/Unity.Timeline.Editor.dll</HintPath>
     </Reference>

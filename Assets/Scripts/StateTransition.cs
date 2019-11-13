@@ -93,6 +93,6 @@ public class StateTransition : MonoBehaviour
     private float CalcCircleMaxScale()
     {
         var screenSize = Utils.GetScreenSize();
-        return (float)Math.Sqrt(screenSize.x * screenSize.x + screenSize.y * screenSize.y);
+        return (float)Math.Sqrt(screenSize.x * screenSize.x + screenSize.y * screenSize.y) + 1;
     }
 }

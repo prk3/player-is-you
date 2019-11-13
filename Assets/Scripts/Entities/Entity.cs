@@ -139,11 +139,12 @@ namespace Entities
             return TraitToBehaviorMap[t];
         }
 
-        public EntityType type; //can be set once, before update
+        public EntityType type; // can be set once, before update
         public int x;
         public int y;
         private int _z;
 
+        private bool _xFlip; // flips entity horizontally
 
         // used by move method
         private bool _moving;
@@ -189,18 +190,23 @@ namespace Entities
                     // ease-in based on y-flipped parabola
                     float PositionFunc(float x) => x * (2 - x);
 
-                    var tmpPos = _moveFrom + ((_moveTo - _moveFrom) * (PositionFunc(_moveTime / _moveDuration)));
+                    var tmpPos = _moveFrom + (_moveTo - _moveFrom) * PositionFunc(_moveTime / _moveDuration);
                     gameObject.transform.localPosition = new Vector3(
-                        tmpPos.x,
+                        tmpPos.x + (_xFlip ? 1 : 0),
                         -tmpPos.y - 1,
                         gameObject.transform.localPosition.z);
+
+                    gameObject.transform.localScale = new Vector3(
+                        _xFlip ? -1 : 1,
+                        gameObject.transform.localScale.y,
+                        gameObject.transform.localScale.z);
                 }
             }
         }
 
         public int z
         {
-            get { return _z; }
+            get => _z;
             set
             {
                 _z = value;
@@ -222,6 +228,12 @@ namespace Entities
             _moveDuration = time;
             _moveTime = 0;
             _moving = true;
+
+            if (type == EntityType.Player)
+            {
+                if (to.x < from.x)      _xFlip = true;
+                else if (to.x > from.x) _xFlip = false;
+            }
         }
 
         /**

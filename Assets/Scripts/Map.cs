@@ -110,7 +110,7 @@ public class Map : MonoBehaviour
 
         if (Entity.IsSubject(type) || Entity.IsTrait(type) || type == EntityType.ConnectorIs)
         {
-            obj.AddComponent<Traits.Push>();
+            obj.AddComponent<Push>();
         }
 
         var ren = obj.AddComponent<SpriteRenderer>();
