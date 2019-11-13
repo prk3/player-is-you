@@ -46,8 +46,8 @@ namespace States
         {
             if (_transition.IsStateActive())
             {
-                // reset unlocked levels when d + e + l held
-                if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.E) && Input.GetKey(KeyCode.L))
+                // reset unlocked levels when d + l held
+                if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.L))
                 {
                     if (PlayerPrefs.GetString("unlocked_levels") != defaultUnlockedLevels)
                     {

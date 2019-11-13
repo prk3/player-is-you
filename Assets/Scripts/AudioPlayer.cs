@@ -17,7 +17,7 @@ public class AudioPlayer : MonoBehaviour
             // we load all clips at the start to avoid lag
             _sounds = new Dictionary<string, AudioClip>
             {
-                {"background", Resources.Load<AudioClip>("Sounds/cyba_yellow")},
+                {"background", Resources.Load<AudioClip>("Sounds/cyba_yellow_short")},
                 {"select",     Resources.Load<AudioClip>("Sounds/select")},
                 {"pause",      Resources.Load<AudioClip>("Sounds/pause")},
                 {"win",        Resources.Load<AudioClip>("Sounds/win")},
