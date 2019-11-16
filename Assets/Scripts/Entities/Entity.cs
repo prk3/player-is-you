@@ -54,6 +54,7 @@ namespace Entities
 
         // used only on start screen
         SubjectNoun,
+        SubjectGoal,
         TraitVerb,
         TraitMove,
     }

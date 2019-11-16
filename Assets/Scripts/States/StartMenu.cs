@@ -110,7 +110,7 @@ namespace States
             }
 
             {
-                var you = MakeFakeEntity(EntityType.TraitYou);
+                var you = MakeFakeEntity(EntityType.SubjectGoal);
                 you.transform.parent = gameObject.transform;
                 you.transform.localPosition = new Vector3(4f, -4.5f, 0);
             }
