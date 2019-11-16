@@ -110,15 +110,15 @@ namespace States
             }
 
             {
-                var you = MakeFakeEntity(EntityType.SubjectGoal);
-                you.transform.parent = gameObject.transform;
-                you.transform.localPosition = new Vector3(4f, -4.5f, 0);
+                var goal = MakeFakeEntity(EntityType.SubjectGoal);
+                goal.transform.parent = gameObject.transform;
+                goal.transform.localPosition = new Vector3(4f, -4.5f, 0);
             }
 
             {
-                var yIsW = MakeFakeEntity(EntityType.ConnectorIs);
-                yIsW.transform.parent = gameObject.transform;
-                yIsW.transform.localPosition = new Vector3(5f, -4.5f, 0);
+                var gIsW = MakeFakeEntity(EntityType.ConnectorIs);
+                gIsW.transform.parent = gameObject.transform;
+                gIsW.transform.localPosition = new Vector3(5f, -4.5f, 0);
             }
 
             {
