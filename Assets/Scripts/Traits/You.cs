@@ -25,10 +25,14 @@ namespace Traits
          */
         void Update()
         {
-            CheckMoveEnd();
-
-            if (!_entity.IsMoving() && (!_gameplay || _gameplay.IsPlaying()) &&
-                (!_stateTransition || _stateTransition.IsStateActive()))
+            if (!MoveFinalized())
+            {
+                if (MapUpdateNeeded())
+                {
+                    UpdateAfterMove();
+                }
+            }
+            else if (_gameplay.IsPlaying() && _stateTransition.IsStateActive())
             {
                 int up = Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.W) ? 1 : 0;
                 int down = Input.GetKey(KeyCode.DownArrow) || Input.GetKey(KeyCode.S) ? 1 : 0;
@@ -96,19 +100,35 @@ namespace Traits
         }
 
         /**
-         * Executed on every update, updates map when all moved blocks stop moving.
+         * Whether all blocks finished moving.
          */
-        private void CheckMoveEnd()
+        private bool MoveFinalized()
         {
-            if (_movedEntities == null) return;
+            return _movedEntities == null;
+        }
+
+        /**
+         * Whether map update is needed because all blocks stopped moving.
+         */
+        private bool MapUpdateNeeded()
+        {
+            if (_movedEntities == null) return false;
 
             while (_movingEntities.Count > 0 && !_movingEntities.Peek().IsMoving())
             {
                 _movingEntities.Pop();
             }
 
-            if (_movingEntities.Count != 0) return;
+            if (_movingEntities.Count == 0) return true;
 
+            return false;
+        }
+
+        /**
+         * Updates map after all blocks stop moving.
+         */
+        private void UpdateAfterMove()
+        {
             _movedEntities = null;
             _movingEntities = null;
 

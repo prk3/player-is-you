@@ -72,8 +72,9 @@ public class Map : MonoBehaviour
                     continue;
                 }
 
-                var tile = MakeEntityObject(x, y, type);
-                stacks[y][x].Add(tile.GetComponent<Entity>());
+                var (entityObj, entity) = MakeEntity(x, y, 0, type);
+                entityObj.transform.parent = gameObject.transform;
+                stacks[y][x].Add(entity);
             }
         }
 
@@ -96,16 +97,15 @@ public class Map : MonoBehaviour
     /**
      * Creates an entity with position x, y and type "type".
      */
-    private GameObject MakeEntityObject(int x, int y, EntityType type)
+    private (GameObject, Entity) MakeEntity(int x, int y, int z, EntityType type)
     {
-        var obj = new GameObject("entity");
-        obj.transform.parent = gameObject.transform;
+        var obj = new GameObject(type.ToString());
 
         var entity = obj.AddComponent<Entity>();
         entity.type = type;
         entity.x = x;
         entity.y = y;
-        entity.z = 0;
+        entity.z = z;
 
         if (Entity.IsSubject(type) || Entity.IsTrait(type) || type == EntityType.ConnectorIs)
         {
@@ -115,7 +115,7 @@ public class Map : MonoBehaviour
         var ren = obj.AddComponent<SpriteRenderer>();
         ren.sprite = Sprite.Create(
             Entity.GetTexture(),
-            new Rect(32 * (int) (type-1), 0, 32, 32),
+            new Rect(32 * ((int)type - 1), 0, 32, 32),
             new Vector2(0, 0),
             32);
 
@@ -129,7 +129,7 @@ public class Map : MonoBehaviour
             modComp.modTilemap = mod;
         }
 
-        return obj;
+        return (obj, entity);
     }
 
     /**

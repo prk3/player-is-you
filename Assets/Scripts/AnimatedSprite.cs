@@ -31,8 +31,8 @@ public class AnimatedSprite : MonoBehaviour
             );
         }
 
-        _spritesModed = new Sprite[_sprites.Length];
-        for (int i = 0; i < _spritesModed.Length; i++)
+        _spritesModed = new Sprite[numberOfSprites];
+        for (int i = 0; i < numberOfSprites; i++)
         {
             _spritesModed[i] = _sprites[i];
         }
@@ -54,7 +54,7 @@ public class AnimatedSprite : MonoBehaviour
      */
     private void NextSprite()
     {
-        _currentSpriteIndex = _currentSpriteIndex >= numberOfSprites - 1 ? 0 : _currentSpriteIndex + 1;
+        _currentSpriteIndex = (_currentSpriteIndex + 1) % numberOfSprites;
         gameObject.GetComponent<SpriteRenderer>().sprite = _spritesModed[_currentSpriteIndex];
     }
 
@@ -73,8 +73,6 @@ public class AnimatedSprite : MonoBehaviour
                 mod,
                 modPosition,
                 size);
-
-            newTexture.filterMode = _sprites[i].texture.filterMode;
 
             _spritesModed[i] = Sprite.Create(
                 newTexture,

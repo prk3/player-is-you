@@ -9,21 +9,10 @@ namespace States
             var transition = gameObject.AddComponent<StateTransition>();
 
             var unlockedLevels = PlayerPrefs.GetString("unlocked_levels");
-            int selectedLevel = GameStore.SelectedLevel;
-            GameStore.SelectedLevel = -1;
-
-            if (selectedLevel == -1)
-            {
-                int lastUnlocked = unlockedLevels.LastIndexOf('1');
-                if (lastUnlocked == -1 || lastUnlocked == unlockedLevels.Length - 1)
-                {
-                    selectedLevel = 0;
-                }
-                else
-                {
-                    selectedLevel = lastUnlocked;
-                }
-            }
+            int lastUnlocked = unlockedLevels.LastIndexOf('1');
+            var selectedLevel = lastUnlocked == -1 || lastUnlocked == unlockedLevels.Length - 1
+                ? 0
+                : lastUnlocked;
 
             var menu = new GameObject("menu");
             menu.transform.parent = gameObject.transform;

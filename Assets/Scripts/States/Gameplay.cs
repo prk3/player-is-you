@@ -7,61 +7,51 @@ namespace States
         private StateTransition _transition;
         private bool _paused;
         private GameObject _overlay;
-        private GameObject _menu;
+        private GameObject _quickMenu;
         private GameObject _lose;
-
-        // timing members used for delay after won/lost message
-        private bool _redirecting;
-        private float _redirectingTime;
-        private float _redirectingDuration = 3f;
 
         void Start()
         {
             _transition = gameObject.AddComponent<StateTransition>();
 
-            var gameBoard = new GameObject("map");
-            gameBoard.transform.parent = gameObject.transform;
-            var map = gameBoard.AddComponent<Map>();
-            map.levelId = GameStore.Level;
+            {
+                var gameBoard = new GameObject("map");
+                gameBoard.transform.parent = gameObject.transform;
+                var map = gameBoard.AddComponent<Map>();
+                map.levelId = GameStore.Level;
+            }
 
-            _overlay = GameObject.CreatePrimitive(PrimitiveType.Plane);
-            _overlay.name = "overlay";
-            _overlay.SetActive(false);
-            _overlay.transform.parent = gameObject.transform;
-            _overlay.transform.localPosition = new Vector3(0, 0, -1);
-            _overlay.transform.localScale = new Vector3(3, 1, 3);
+            {
+                _overlay = GameObject.CreatePrimitive(PrimitiveType.Plane);
+                _overlay.name = "overlay";
+                _overlay.SetActive(false);
+                _overlay.transform.parent = gameObject.transform;
+                _overlay.transform.localPosition = new Vector3(0, 0, -1);
+                _overlay.transform.localScale = new Vector3(3, 1, 3);
 
-            var rotation = _overlay.transform.localRotation.eulerAngles;
-            rotation.x = -90;
-            _overlay.transform.localRotation = Quaternion.Euler(rotation);
+                var rotation = _overlay.transform.localRotation.eulerAngles;
+                rotation.x = -90;
+                _overlay.transform.localRotation = Quaternion.Euler(rotation);
 
-            _overlay.GetComponent<MeshRenderer>().material = Resources.Load<Material>("pause_menu_overlay");
+                _overlay.GetComponent<MeshRenderer>().material = Resources.Load<Material>("pause_menu_overlay");
+            }
 
-            _menu = new GameObject("quick menu");
-            _menu.SetActive(false);
-            _menu.transform.parent = gameObject.transform;
-            _menu.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
+            {
+                _quickMenu = new GameObject("quick menu");
+                _quickMenu.SetActive(false);
+                _quickMenu.transform.parent = gameObject.transform;
+                _quickMenu.transform.localPosition = new Vector3(0, 2, -2);
 
-            var menuComp = _menu.AddComponent<Menu>();
-            menuComp.AddItem("Continue", CloseQuickMenu);
-            menuComp.AddItem("Restart", Restart);
-            menuComp.AddItem("Exit", Exit);
+                var menuComp = _quickMenu.AddComponent<Menu>();
+                menuComp.AddItem("Continue", CloseQuickMenu);
+                menuComp.AddItem("Restart", Restart);
+                menuComp.AddItem("Exit", Exit);
+            }
         }
 
         void Update()
         {
-            if (_redirecting)
-            {
-                _redirectingTime += Time.deltaTime;
-
-                if (_redirectingTime > _redirectingDuration)
-                {
-                    _redirecting = false;
-                    _transition.TransitionTo("LevelSelectMenu");
-                }
-            }
-
-            else if (_transition.IsStateActive())
+            if (_transition.IsStateActive())
             {
                 if (_paused)
                 {
@@ -108,17 +98,26 @@ namespace States
             _paused = true;
             _overlay.SetActive(true);
 
-            var lose = new GameObject("lose");
-            lose.transform.parent = gameObject.transform;
-            lose.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
+            {
+                var lose = new GameObject("lose");
+                lose.transform.parent = gameObject.transform;
+                lose.transform.localPosition = new Vector3(0, 3, -2);
 
-            var loseText = lose.AddComponent<AnimatedText>();
-            loseText.text = "You Lost. Try Again!";
-            loseText.align = Align.Center;
+                var loseText = lose.AddComponent<AnimatedText>();
+                loseText.text = "You Lost. Try Again!";
+                loseText.align = Align.Center;
+            }
 
-            GameStore.SelectedLevel = GameStore.Level;
-            _redirecting = true;
-            _redirectingTime = 0;
+            {
+                var loseMenu = new GameObject("lose menu");
+                loseMenu.transform.parent = gameObject.transform;
+                loseMenu.transform.localPosition = new Vector3(0, 0, -2);
+
+                var menu = loseMenu.AddComponent<Menu>();
+
+                menu.AddItem("Restart", () => _transition.TransitionTo("Gameplay"));
+                menu.AddItem("Exit", () => _transition.TransitionTo("StartMenu"));
+            }
         }
 
         /**
@@ -130,33 +129,56 @@ namespace States
             _overlay.SetActive(true);
 
             var unlockedLevels = PlayerPrefs.GetString("unlocked_levels");
-            if (GameStore.Level + 1 < unlockedLevels.Length && unlockedLevels[GameStore.Level + 1] == '0')
+            var hasNextLevel = GameStore.Level + 1 < unlockedLevels.Length;
+
+            if (hasNextLevel)
             {
-                PlayerPrefs.SetString("unlocked_levels",
-                    unlockedLevels.Substring(0, GameStore.Level + 1) +
-                    '1' +
-                    unlockedLevels.Substring(GameStore.Level + 2));
-                PlayerPrefs.Save();
+                var isNextLevelLocked = unlockedLevels[GameStore.Level + 1] == '0';
+
+                if (isNextLevelLocked)
+                {
+                    PlayerPrefs.SetString("unlocked_levels",
+                        unlockedLevels.Substring(0, GameStore.Level + 1) +
+                        '1' +
+                        unlockedLevels.Substring(GameStore.Level + 2));
+                    PlayerPrefs.Save();
+                }
             }
 
-            var win = new GameObject("win");
-            win.transform.parent = gameObject.transform;
-            win.transform.localPosition += Vector3.back * 2.0f  + Vector3.up * 2.0f;
+            {
+                var win = new GameObject("win");
+                win.transform.parent = gameObject.transform;
+                win.transform.localPosition = new Vector3(0, 3, -2);
 
-            var winText = win.AddComponent<AnimatedText>();
-            winText.text = $"You completed level ${GameStore.Level + 1}!";
-            winText.align = Align.Center;
+                var winText = win.AddComponent<AnimatedText>();
+                winText.text = $"You completed level ${GameStore.Level + 1}!";
+                winText.align = Align.Center;
+            }
 
-            GameStore.SelectedLevel = GameStore.Level + 1 >= unlockedLevels.Length ? -1 : GameStore.Level + 1;
-            _redirecting = true;
-            _redirectingTime = 0;
+            {
+                var winMenu = new GameObject("win menu");
+                winMenu.transform.parent = gameObject.transform;
+                winMenu.transform.localPosition = new Vector3(0, 0, -2);
+
+                var menu = winMenu.AddComponent<Menu>();
+
+                if (hasNextLevel)
+                {
+                    menu.AddItem("Next level", () =>
+                    {
+                        GameStore.Level++;
+                        _transition.TransitionTo("Gameplay");
+                    });
+                }
+                menu.AddItem("Exit", () => _transition.TransitionTo("StartMenu"));
+            }
         }
 
         public void OpenQuickMenu()
         {
             _paused = true;
             _overlay.SetActive(true);
-            _menu.SetActive(true);
+            _quickMenu.SetActive(true);
             AudioPlayer.PlaySound("pause");
         }
 
@@ -164,7 +186,7 @@ namespace States
         {
             _paused = false;
             _overlay.SetActive(false);
-            _menu.SetActive(false);
+            _quickMenu.SetActive(false);
         }
     }
 }

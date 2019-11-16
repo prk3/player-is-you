@@ -51,6 +51,11 @@ namespace Entities
         TraitWin,
         TraitLose,
         TraitFloat,
+
+        // used only on start screen
+        SubjectNoun,
+        TraitVerb,
+        TraitMove,
     }
 
     /**
