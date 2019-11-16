@@ -8,7 +8,7 @@ namespace Traits
     {
         public override int GetInteractionOrder()
         {
-            return 300;
+            return 400;
         }
 
         /**

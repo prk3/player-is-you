@@ -7,7 +7,6 @@ namespace Traits
 {
     public class You : Trait
     {
-        private Entity _entity;
         private List<Entity> _movedEntities;
         private Stack<Entity> _movingEntities;
         private StateTransition _stateTransition;
@@ -17,7 +16,6 @@ namespace Traits
         {
             _stateTransition = gameObject.GetComponentInParent<StateTransition>();
             _gameplay = gameObject.GetComponentInParent<Gameplay>();
-            _entity = gameObject.GetComponent<Entity>();
         }
 
         /**
